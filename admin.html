@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Admin</title>
+<style>:root{--bg:#fff;--ink:#2b2a26;--line:#e5e3dc;--ac:#44705b;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1d1b;--ink:#eee;--line:#3a3b38;--ac:#6fa88f}}
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,sans-serif}
+button,input{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:none;color:inherit}
+button{cursor:pointer}.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.c{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}.b{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.t{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.on{background:var(--ac);color:#fff}small{opacity:.7}</style></head><body>
+<div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" placeholder="Email" style="width:100%;margin-bottom:8px"><input id="w" type="password" placeholder="Password" style="width:100%;margin-bottom:8px"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
+<div id="A" hidden><div class="t" id="tabs"></div><button onclick="csv()">Export CSV</button> <button onclick="out()">Logout</button><div id="o"></div></div>
+<script>
+var SB="",SK="",tok=sessionStorage.t,rows=[],f="pending",P={"1":"Shift 1","2":"Shift 2","full":"Full day"};
+var $=function(i){return document.getElementById(i)};
+function api(p,o){o=o||{};o.headers={apikey:SK,Authorization:"Bearer "+(tok||SK),"Content-Type":"application/json",Prefer:"return=minimal"};return fetch(SB+p,o)}
+function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Wrong email or password"})}
+function out(){sessionStorage.clear();location.reload()}
+function load(){api("/rest/v1/bookings?select=*&order=created_at.desc").then(function(r){if(r.status==401){out();return}return r.json()}).then(function(d){if(!d)return;rows=d;$("L").hidden=true;$("A").hidden=false;draw()})}
+function draw(){$("tabs").innerHTML=["pending","approved","rejected","all"].map(function(k){var n=rows.filter(function(r){return k=="all"||r.status==k}).length;return'<button class="'+(k==f?"on":"")+'" onclick="f=\''+k+'\';draw()">'+k+" ("+n+")</button>"}).join("");
+$("o").innerHTML=rows.filter(function(r){return f=="all"||r.status==f}).map(function(r){var due=r.total-r.fee_paid;return'<div class="c"><b>'+esc(r.name)+'</b> · <a href="tel:'+r.mobile+'">'+r.mobile+'</a> <small>'+r.status+'</small><br>'+P[r.plan_key]+' · '+r.months+' mo · Seat '+(r.seat||"any")+' · starts '+(r.start_date||"-")+'<br>'+esc(r.exam||"")+(r.referred_by?' · ref: '+esc(r.referred_by):"")+'<br>Total ₹'+r.total+' · Paid ₹'+r.fee_paid+' · <b>Due ₹'+due+'</b>'+(r.notes?'<br><small>'+esc(r.notes)+'</small>':"")+'<div class="b">'+(r.status!="approved"?'<button class="p" onclick="st(\''+r.id+'\',\'approved\')">Approve</button>':"")+(r.status!="rejected"?'<button onclick="st(\''+r.id+'\',\'rejected\')">Reject</button>':"")+'<button onclick="fee(\''+r.id+'\')">Fees / seat / notes</button><button onclick="del(\''+r.id+'\')">Delete</button></div></div>'}).join("")||"<p>Nothing here.</p>"}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function up(id,b){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(function(r){if(!r.ok)alert("Failed to save");load()})}
+function st(id,s){var r=rows.find(function(x){return x.id==id});if(s=="approved"&&r.seat){var k=rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)});if(k&&!confirm("Seat "+r.seat+" is already taken in this shift. Approve anyway?"))return}up(id,{status:s})}
+function fee(id){var r=rows.find(function(x){return x.id==id}),p=prompt("Fees paid so far (₹)",r.fee_paid);if(p===null)return;var s=prompt("Seat number (1-50, blank = none)",r.seat||"");if(s===null)return;var n=prompt("Notes",r.notes||"");if(n===null)return;up(id,{fee_paid:+p||0,seat:+s||null,notes:n})}
+function del(id){if(confirm("Delete permanently?"))api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(load)}
+function csv(){var h=["name","mobile","exam","plan_key","months","seat","start_date","total","fee_paid","status","notes","created_at"];var t=[h.join(",")].concat(rows.map(function(r){return h.map(function(k){return'"'+String(r[k]==null?"":r[k]).replace(/"/g,'""')+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
+if(tok)load();
+</script></body></html>

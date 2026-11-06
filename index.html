@@ -92,12 +92,21 @@ h2{font-size:clamp(30px,4.6vw,44px);max-width:12em}
 .sp{grid-column:1/-1;display:flex;gap:6px}.sp span{flex:1;font-size:11px;color:var(--muted);border-top:3px solid var(--line);padding-top:6px}.sp span.on{border-color:var(--accent);color:var(--ink);font-weight:600}
 .pane{grid-column:1/-1;display:none;grid-template-columns:1fr 1fr;gap:16px 18px}.pane.on{display:grid;animation:fi .3s}@keyframes fi{from{opacity:0;transform:translateY(6px)}}
 .sg{display:grid;grid-template-columns:repeat(5,1fr) 16px repeat(5,1fr);gap:6px}
-.st{aspect-ratio:1;border:1px solid var(--line);background:var(--bg);border-radius:8px;font:500 11px Inter;color:var(--ink);cursor:pointer;padding:0}.st:hover{border-color:var(--accent)}.st.sel{background:var(--accent);border-color:var(--accent);color:#fff}.st.tk{background:repeating-linear-gradient(45deg,var(--soft),var(--soft) 3px,var(--bg) 3px,var(--bg) 6px);color:var(--muted);cursor:not-allowed;opacity:.6}
+.st{aspect-ratio:1;border:1px solid var(--line);background:var(--bg);border-radius:8px;font:500 11px Inter;color:var(--ink);cursor:pointer;padding:0}.st:hover{border-color:var(--accent)}.st.sel{background:var(--accent);border-color:var(--accent);color:#fff}.st.tk{background:repeating-linear-gradient(45deg,var(--soft),var(--soft) 3px,var(--bg) 3px,var(--bg) 6px);color:var(--muted);cursor:not-allowed;opacity:.35;text-decoration:line-through}
 .wl{text-align:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .lg{display:flex;gap:14px;font-size:11px;color:var(--muted)}
 .sv{margin:0;font-size:12.5px;color:var(--accent);font-weight:500}
 .form .chk{display:flex;gap:8px;align-items:center}.form .chk input{width:auto;margin:0}
-.pass{background:linear-gradient(135deg,#3F6B58,#5E8F7B);color:#fff;border-radius:18px;padding:18px 20px}.ph{display:flex;justify-content:space-between;font-size:11px;opacity:.85}.pn{font:600 22px Inter;margin:14px 0}.pm{display:flex;gap:28px}.pm small{display:block;font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.1em}.pm b{font:600 18px Inter}
+.pass{--sw:112px;position:relative;display:grid;grid-template-columns:minmax(0,1fr) var(--sw);background:linear-gradient(135deg,#3F6B58,#5E8F7B);color:#fff;border-radius:18px;overflow:hidden;padding:0}
+.pass::before,.pass::after{content:"";position:absolute;right:var(--sw);width:18px;height:18px;border-radius:50%;background:var(--card);transform:translateX(9px)}.pass::before{top:-9px}.pass::after{bottom:-9px}
+.pmain{padding:18px 18px 16px 20px;min-width:0}.ph{display:flex;justify-content:space-between;gap:8px;font-size:11px;opacity:.85}.pn{font:600 22px Inter;margin:14px 0;overflow-wrap:anywhere}.pm{display:flex;gap:26px}.pm small,.pstub small{display:block;font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.1em}.pm b{font:600 18px Inter}
+.pbadge{display:inline-block;margin-top:14px;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);font:600 11px Inter;letter-spacing:.02em}
+.pstub{border-left:2px dashed rgba(255,255,255,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:14px 8px;text-align:center}.pstub b{font:700 40px/1 Inter}
+.pstub b.sm{font-size:22px;padding:9px 0}.stamp{margin-top:10px;transform:rotate(-8deg);border:2px solid rgba(255,255,255,.8);border-radius:6px;padding:2px 6px;font:700 9px Inter;letter-spacing:.1em;text-transform:uppercase;opacity:.9}
+@media(max-width:480px){.pass{--sw:90px}.pmain{padding:16px 12px 14px 16px}.ph{flex-direction:column;gap:2px}.pn{font-size:19px}.pm{gap:16px}.pm b{font-size:16px;white-space:nowrap}.pstub b{font-size:32px}.pbadge{font-size:9.5px;padding:5px 8px;white-space:nowrap;letter-spacing:0}}
+.fd{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.fd i{display:block;width:14px;height:14px;border-radius:50%;background:var(--soft)}.fd i.on{background:var(--accent);box-shadow:0 0 0 3px rgba(68,112,91,.2)}.fd i.nx{background:transparent;border:2px solid var(--accent);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.3);opacity:.55}}@media(prefers-reduced-motion:reduce){.fd i.nx{animation:none}}
+.st{position:relative;overflow:hidden}.st i{position:absolute;top:0;bottom:0;width:50%}.st i.a{left:0}.st i.b{right:0;border-left:1px solid var(--line)}.st i.x{background:repeating-linear-gradient(45deg,var(--soft),var(--soft) 3px,var(--bg) 3px,var(--bg) 6px)}.st em{position:relative;z-index:1;font-style:normal}.st.sel i.x{background:repeating-linear-gradient(45deg,rgba(0,0,0,.28),rgba(0,0,0,.28) 3px,transparent 3px,transparent 6px)}.st.sel i.b{border-left-color:rgba(255,255,255,.5)}.lg{flex-wrap:wrap}
 .nav{grid-column:1/-1;display:flex;gap:12px}.nav .btn{flex:1}.er{margin:0;color:#B3261E;font-size:12px}
 @media(max-width:820px){.pane{grid-template-columns:1fr}}
 .total{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;background:var(--soft);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--muted)}
@@ -200,7 +209,7 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 <section class="plans" id="plans"><div class="w">
 <p class="eb">Plans &amp; fees</p>
 <h2>Simple plans. Pick your shift.</h2>
-<p class="sub">Grand opening offer: ₹100 off every plan for the first 20 students. Morning or Evening shift ₹400 (regular ₹500), Full day ₹700 (regular ₹800). Save 10% on 3 months and 15% on 6 months.</p>
+<p class="sub">Grand opening offer: ₹100 off every plan for the first 20 students. Shift 1 or Shift 2 ₹400 (regular ₹500), Full day shift ₹700 (regular ₹800). Save 10% on 3 months and 15% on 6 months.</p>
 <div class="pg" id="pg"></div>
 </div></section>
 
@@ -208,9 +217,9 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 <div>
 <p class="eb">Booking</p>
 <h2>Reserve your seat</h2>
-<p class="in">Fill in your details and we will receive them on WhatsApp. We confirm your seat and invite you for a visit. The opening prices (₹100 off every plan) are for the first 20 students only.</p>
+<p class="in">Fill in your details and we receive them instantly, and on WhatsApp. We confirm your seat and invite you for a visit. The opening prices (₹100 off every plan) are for the first 20 students only.</p>
 <div class="form">
-<div class="cnt"><b id="cl"></b><div class="bar"><i id="cb"></i></div></div>
+<div class="cnt"><b id="cl"></b><div class="fd" id="fd" aria-hidden="true"></div></div>
 <div class="sp"><span class="on">1 · Plan</span><span>2 · Seat</span><span>3 · Details</span></div>
 <div class="pane on">
 <label>Plan<select id="pl"></select></label>
@@ -220,13 +229,13 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 </div>
 <div class="pane">
 <div class="full"><div class="wl">Windows</div><div class="sg" id="sg"></div><div class="wl" style="margin-top:8px">Entrance</div></div>
-<div class="lg full"><span>⬜ Free</span><span>🟩 Yours</span><span>▨ Taken</span></div>
+<div class="lg full"><span>⬜ Free</span><span>🟩 Yours</span><span>▨ Booked</span><span>◧ Left half = Shift 1, right half = Shift 2</span></div>
 <p class="full" id="ss" style="margin:0;font-size:13px">Pick a seat, or skip and we will assign one.</p>
 <label>Start date<input type="date" id="sd"></label>
 <label class="chk" style="align-self:end;padding-bottom:12px"><input type="checkbox" id="tr" checked>Start with 2 free trial days</label>
 </div>
 <div class="pane">
-<div class="pass full"><div class="ph"><b>Sarthak Library</b><span>Member pass</span></div><div class="pn" id="pn">Your name</div><div class="pm"><div><small>Seat</small><b id="ps">Any</b></div><div><small>Shift</small><b id="pt"></b></div><div><small>Starts</small><b id="pd">–</b></div></div></div>
+<div class="pass full"><div class="pmain"><div class="ph"><b>Sarthak Library</b><span>Member pass</span></div><div class="pn" id="pn">Your name</div><div class="pm"><div><small>Shift</small><b id="psh"></b></div><div><small>Starts</small><b id="pd">–</b></div></div><span class="pbadge" id="pb"></span></div><div class="pstub"><small>Seat</small><b id="ps">Any</b><span class="stamp">Pending approval</span></div></div>
 <label>Your name<input id="nm" placeholder="e.g. Aman Verma" autocomplete="name"></label>
 <label>Mobile number<input id="mb" placeholder="10-digit number" inputmode="numeric" maxlength="10" autocomplete="tel"></label>
 <label class="full">Preparing for<select id="pf"><option>UPSC / State PCS</option><option>SSC</option><option>Defence (NDA / CDS / Agniveer)</option><option>Police</option><option>Banking</option><option>Railways</option><option>NEET / JEE / CUET</option><option>College studies</option><option>Other</option></select></label>
@@ -257,9 +266,9 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 <script>
 (function(){
 var NUM="919450860232",$=function(i){return document.getElementById(i)};
-var plans=[["Morning shift","8:00 AM – 2:00 PM",400,500],["Evening shift","2:00 PM – 8:00 PM",400,500],["Full day","8:00 AM – 8:00 PM",700,800]];
+var plans=[["Shift 1","8:00 AM – 2:00 PM",400,500],["Shift 2","2:00 PM – 8:00 PM",400,500],["Full day shift","8:00 AM – 8:00 PM",700,800]],KEYS=["1","2","full"];
 var rules=["Keep your phone on silent and take calls outside.","Speak softly and respect every student.","Sit only on your own seat and in your own shift.","Keep your desk and the floor clean.","No food at the desks. Drinking water is always allowed.","Carry your books and belongings when you leave."];
-var faqs=[["Is there an opening offer?","Yes. The first 20 students get ₹100 off every plan: a Morning or Evening shift for ₹400 a month instead of ₹500, or a Full day seat (8 AM to 8 PM) for ₹700 a month instead of ₹800. On top of that, pay for 3 months and save 10%, or pay for 6 months and save 15%. Pay for 3 months and save 10%, or pay for 6 months and save 15%. Refer a friend and you both get ₹100 off. Your first 2 days are a free trial."],["Do I get a fixed seat?","Yes. Every member gets a personal seat for their shift, so your desk is ready each day."],["Can I visit before joining?","Absolutely. Walk in any day between 8:00 AM and 8:00 PM for a free look around."],["Is there a registration fee?","No registration fee. The monthly fee for your shift is all there is."],["How do I reserve a seat?","Fill in the booking form on this page. Your details reach us on WhatsApp, and we invite you to visit the library."],["Is there a free trial?","Yes, you get 2 free trial days. Come in, sit at a desk and see if the space suits you."],["Is the library safe for girls?","Yes. The library has round-the-clock CCTV coverage, a strict quiet-zone policy and respectful study rules for everyone."],["Can I change my shift later?","Yes, you can switch shifts when you renew, subject to seat availability."]];
+var faqs=[["Is there an opening offer?","Yes. The first 20 students get ₹100 off every plan: Shift 1 (8 AM to 2 PM) or Shift 2 (2 PM to 8 PM) for ₹400 a month instead of ₹500, or a Full day shift seat (8 AM to 8 PM) for ₹700 a month instead of ₹800. On top of that, pay for 3 months and save 10%, or pay for 6 months and save 15%. Pay for 3 months and save 10%, or pay for 6 months and save 15%. Refer a friend and you both get ₹100 off. Your first 2 days are a free trial."],["Do I get a fixed seat?","Yes. Every member gets a personal seat for their shift, so your desk is ready each day."],["Can I visit before joining?","Absolutely. Walk in any day between 8:00 AM and 8:00 PM for a free look around."],["Is there a registration fee?","No registration fee. The monthly fee for your shift is all there is."],["How do I reserve a seat?","Fill in the booking form on this page. Your details reach us on WhatsApp, and we invite you to visit the library."],["Is there a free trial?","Yes, you get 2 free trial days. Come in, sit at a desk and see if the space suits you."],["Is the library safe for girls?","Yes. The library has round-the-clock CCTV coverage, a strict quiet-zone policy and respectful study rules for everyone."],["Can I change my shift later?","Yes, you can switch shifts when you renew, subject to seat availability."]];
 var chev='<svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',chk='<svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>';
 $("rl").innerHTML=rules.map(function(r){return"<li>"+chk+"<span>"+r+"</span></li>"}).join("");
 $("fq").innerHTML=faqs.map(function(f){return"<details><summary>"+f[0]+chev+"</summary><p>"+f[1]+"</p></details>"}).join("");
@@ -267,11 +276,11 @@ var sel=0,dur=1;
 function fmt(n){return"₹"+Math.round(n).toLocaleString("en-IN")}
 function total(){var d={1:1,3:.9,6:.85}[dur];return plans[sel][2]*dur*d}
 function render(){
-$("pg").innerHTML=plans.map(function(p,i){return'<div class="pc'+(i==sel?" on":"")+'" data-i="'+i+'"><div class="t"><h3>'+p[0]+"</h3>"+'<span class="bd">First 20 students · Save ₹100</span>'+'</div><div class="h">'+p[1]+'</div><div class="pr">'+fmt(p[2])+' <small>/month</small>'+(p[3]?' <s class="old">'+fmt(p[3])+'</s>':"")+'</div><div class="s">50 seats available</div><button class="btn">'+(i==sel?"✓ Selected":"Choose plan")+"</button></div>"}).join("");
+$("pg").innerHTML=plans.map(function(p,i){return'<div class="pc'+(i==sel?" on":"")+'" data-i="'+i+'"><div class="t"><h3>'+p[0]+"</h3>"+'<span class="bd">First 20 students · Save ₹100</span>'+'</div><div class="h">'+p[1]+'</div><div class="pr">'+fmt(p[2])+' <small>/month</small>'+(p[3]?' <s class="old">'+fmt(p[3])+'</s>':"")+'</div><div class="s">'+avail(i)+' of 50 seats available</div><button class="btn">'+(i==sel?"✓ Selected":"Choose plan")+"</button></div>"}).join("");
 $("pl").innerHTML=plans.map(function(p,i){return"<option value="+i+(i==sel?" selected":"")+">"+p[0]+" · "+fmt(p[2])+"</option>"}).join("");
-$("tl").textContent="Total for "+dur+(dur==1?" month":" months");$("tv").textContent=fmt(total());var q=plans[sel],sv=(q[3]||q[2])*dur-total();$("sv").textContent="You save "+fmt(sv)+" with the opening offer"+(dur>1?" and the "+dur+"-month discount":"")+".";link()}
+$("tl").textContent="Total for "+dur+(dur==1?" month":" months");$("tv").textContent=fmt(total());var q=plans[sel],sv=(q[3]||q[2])*dur-total();if(seat&&booked(seat,sel)){seat=0;$("ss").textContent="That seat is booked in this shift. Please pick another."}seats();$("sv").textContent="You save "+fmt(sv)+" with the opening offer"+(dur>1?" and the "+dur+"-month discount":"")+".";link()}
 function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mb").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+" ("+plans[sel][1]+")\nDuration: "+dur+(dur==1?" month":" months")+"\nSeat: "+(seat||"Any available")+"\nStart date: "+($("sd").value||"-")+($("tr").checked?" (with 2 free trial days)":"")+"\nReferred by: "+($("rf").value||"-")+"\nTotal: "+fmt(total());$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t);pass()}
-function pass(){$("pn").textContent=$("nm").value||"Your name";$("ps").textContent=seat||"Any";$("pt").textContent=plans[sel][0].replace(" shift","");$("pd").textContent=$("sd").value?new Date($("sd").value).toLocaleDateString("en-IN",{day:"numeric",month:"short",timeZone:"UTC"}):"–"}
+function pass(){$("pb").textContent=RES<20?"Founding Member #"+(RES+1)+" of 20":"Library Member";$("pn").textContent=$("nm").value||"Your name";$("ps").textContent=seat||"Any";$("ps").className=seat?"":"sm";$("psh").textContent=plans[sel][0];$("pd").textContent=$("sd").value?new Date($("sd").value).toLocaleDateString("en-IN",{day:"numeric",month:"short",timeZone:"UTC"}):"–"}
 $("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){sel=+c.dataset.i;render()}};
 $("pl").onchange=function(){sel=+this.value;render()};
 $("du").onchange=function(){dur=+this.value;render()};
@@ -280,18 +289,29 @@ $("mb").addEventListener("input",function(){this.value=this.value.replace(/\D/g,
 $("wa").href="https://wa.me/"+NUM+"?text="+encodeURIComponent("Hello Sarthak Library, I have a question.");
 $("sh").onclick=function(){var d={title:document.title,url:location.href};try{if(navigator.share)navigator.share(d);else navigator.clipboard.writeText(d.url)}catch(e){}};
 /* booking wizard */
-var seat=0,step=0,TAKEN=[],LEFT=20;/* edit TAKEN (e.g. [3,7,14]) and LEFT by hand as students join */
-$("cl").textContent=LEFT+" of 20 opening seats left";$("cb").style.width=(LEFT/20*100)+"%";
+var seat=0,step=0;
+/* BOOKED: add one entry [seat, shift] for every reservation you approve. shift = "1", "2" or "full".
+   Example: BOOKED=[[3,"1"],[7,"full"],[12,"2"]]  -> seat 3 booked in Shift 1, seat 7 for the full day, seat 12 in Shift 2.
+   A Full day booking blocks the seat in every shift; a Shift 1 / Shift 2 booking blocks that shift and Full day. */
+var BOOKED=[];
+var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",RES=0,LEFT=20;
+function rpc(f,body){return fetch(SB+"/rest/v1/rpc/"+f,{method:"POST",keepalive:true,headers:{apikey:SK,Authorization:"Bearer "+SK,"Content-Type":"application/json"},body:JSON.stringify(body||{})})}
+function cnt(){RES=BOOKED.length;LEFT=Math.max(0,20-RES);$("cl").textContent=RES+" reservations · "+LEFT+" of 20 opening seats left";var fh="";for(var k=0;k<20;k++)fh+="<i"+(k<RES?' class="on"':k==RES?' class="nx"':"")+"></i>";$("fd").innerHTML=fh}
+cnt();
+rpc("get_taken").then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)){BOOKED=d.map(function(x){return[x.seat,x.plan_key]});cnt();render()}}).catch(function(){});
+function save(){rpc("submit_booking",{p_name:$("nm").value.trim(),p_mobile:$("mb").value,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:seat||null,p_start:$("sd").value||null,p_trial:$("tr").checked,p_ref:$("rf").value,p_total:Math.round(total())}).catch(function(){})}
+function booked(n,i){var k=KEYS[i];return BOOKED.some(function(b){return +b[0]===n&&(k=="full"||b[1]=="full"||b[1]==k)})}
+function avail(i){var c=0;for(var n=1;n<=50;n++)if(!booked(n,i))c++;return c}
 var sg=$("sg"),h="";
-for(var r=0;r<5;r++)for(var c=1;c<=10;c++){var n=r*10+c,tk=TAKEN.indexOf(n)>-1;h+=(c==6?"<span></span>":"")+'<button type="button" class="st'+(tk?" tk":"")+'" data-n="'+n+'"'+(tk?" disabled":"")+">"+n+"</button>"}
-sg.innerHTML=h;
+function seats(){h="";for(var r=0;r<5;r++)for(var c=1;c<=10;c++){var n=r*10+c,tk=booked(n,sel),a=booked(n,0),b=booked(n,1);h+=(c==6?"<span></span>":"")+'<button type="button" class="st'+(tk?" tk":"")+(seat===n?" sel":"")+'" data-n="'+n+'"'+(tk?' disabled':"")+' aria-label="Seat '+n+(tk?" booked":a?", Shift 1 booked":b?", Shift 2 booked":"")+'" title="'+(a&&b?"Booked":a?"Shift 1 booked":b?"Shift 2 booked":"Free")+'"><i class="a'+(a?" x":"")+'"></i><i class="b'+(b?" x":"")+'"></i><em>'+n+"</em></button>"}
+sg.innerHTML=h}
 sg.onclick=function(e){var b=e.target.closest(".st");if(!b||b.disabled)return;var n=+b.dataset.n;seat=seat===n?0:n;sg.querySelectorAll(".st").forEach(function(x){x.classList.toggle("sel",+x.dataset.n===seat)});$("ss").textContent=seat?"Seat "+seat+" selected":"Pick a seat, or skip and we will assign one.";link()};
 var d0=new Date(),iso=new Date(Date.now()-d0.getTimezoneOffset()*6e4).toISOString().slice(0,10);$("sd").min=iso;$("sd").value=iso;
 ["sd","tr","rf"].forEach(function(i){$(i).addEventListener("input",link);$(i).addEventListener("change",link)});
 var panes=document.querySelectorAll(".pane"),dots=document.querySelectorAll(".sp span");
 function go(n){step=n;panes.forEach(function(x,i){x.classList.toggle("on",i==n)});dots.forEach(function(x,i){x.classList.toggle("on",i<=n)});$("bb").style.visibility=n?"visible":"hidden";$("nx").style.display=n==2?"none":"";$("sw").style.display=n==2?"":"none"}
 $("nx").onclick=function(){go(step+1)};$("bb").onclick=function(){go(step-1)};
-$("sw").onclick=function(e){var ok=$("nm").value.trim()&&$("mb").value.length==10;$("er").textContent=ok?"":"Please enter your name and a 10-digit mobile number.";if(!ok)e.preventDefault()};
+$("sw").onclick=function(e){var ok=$("nm").value.trim()&&$("mb").value.length==10;$("er").textContent=ok?"":"Please enter your name and a 10-digit mobile number.";if(!ok){e.preventDefault();return}save()};
 go(0);
 render();
 /* focus timer */
