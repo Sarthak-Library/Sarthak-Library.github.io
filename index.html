@@ -240,6 +240,10 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 <label>Mobile number<input id="mb" placeholder="10-digit number" inputmode="numeric" maxlength="10" autocomplete="tel"></label>
 <label class="full">Preparing for<select id="pf"><option>UPSC / State PCS</option><option>SSC</option><option>Defence (NDA / CDS / Agniveer)</option><option>Police</option><option>Banking</option><option>Railways</option><option>NEET / JEE / CUET</option><option>College studies</option><option>Other</option></select></label>
 <label class="full">Referred by (friend's name, both save ₹100)<input id="rf" placeholder="Optional"></label>
+<label>Father's name<input id="fn" placeholder="Father's full name"></label>
+<label>Alternate / parent mobile<input id="am" placeholder="Optional" inputmode="numeric" maxlength="10"></label>
+<label class="full">Address<input id="ad" placeholder="Home address / locality"></label>
+<label class="full">Choose a 4-digit PIN (to check your booking later)<input id="pn4" type="password" placeholder="e.g. 4821" inputmode="numeric" maxlength="4"></label>
 <p class="er full" id="er"></p>
 </div>
 <div class="nav"><button type="button" class="btn ghost" id="bb">Back</button><button type="button" class="btn" id="nx">Next</button><a class="btn" id="sw" href="#" target="_blank" rel="noopener" style="display:none">Send on WhatsApp</a></div>
@@ -254,6 +258,8 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 </aside>
 </div></section>
 
+<section class="w" id="status" style="padding:40px 16px"><h2>Check your booking</h2><p>Enter the mobile number and 4-digit PIN you used while booking.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><input id="cm" placeholder="Mobile number" inputmode="numeric" maxlength="10" style="padding:10px;border-radius:8px;border:1px solid #8885;background:none;color:inherit"><input id="cp" type="password" placeholder="PIN" inputmode="numeric" maxlength="4" style="padding:10px;border-radius:8px;border:1px solid #8885;background:none;color:inherit;width:90px"><button class="btn" id="cb" type="button">Check</button></div><div id="cr"></div></section>
 <section class="faq" id="faq"><div class="w g">
 <div><p class="eb">FAQ</p><h2>Questions students ask</h2></div>
 <div id="fq"></div>
@@ -299,7 +305,7 @@ function rpc(f,body){return fetch(SB+"/rest/v1/rpc/"+f,{method:"POST",keepalive:
 function cnt(){RES=BOOKED.length;LEFT=Math.max(0,20-RES);$("cl").textContent=RES+" reservations · "+LEFT+" of 20 opening seats left";var fh="";for(var k=0;k<20;k++)fh+="<i"+(k<RES?' class="on"':k==RES?' class="nx"':"")+"></i>";$("fd").innerHTML=fh}
 cnt();
 rpc("get_taken").then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)){BOOKED=d.map(function(x){return[x.seat,x.plan_key]});cnt();render()}}).catch(function(){});
-function save(){rpc("submit_booking",{p_name:$("nm").value.trim(),p_mobile:$("mb").value,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:seat||null,p_start:$("sd").value||null,p_trial:$("tr").checked,p_ref:$("rf").value,p_total:Math.round(total())}).catch(function(){})}
+function save(){rpc("submit_booking",{p_name:$("nm").value.trim(),p_father:$("fn").value.trim(),p_mobile:$("mb").value,p_alt:$("am").value,p_address:$("ad").value.trim(),p_pin:$("pn4").value,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:seat||null,p_start:$("sd").value||null,p_trial:$("tr").checked,p_ref:$("rf").value,p_total:Math.round(total())}).then(function(r){$("er").textContent=r.ok?"Request saved. We will confirm on WhatsApp. You can check your status below with your mobile number and PIN.":""}).catch(function(){})}
 function booked(n,i){var k=KEYS[i];return BOOKED.some(function(b){return +b[0]===n&&(k=="full"||b[1]=="full"||b[1]==k)})}
 function avail(i){var c=0;for(var n=1;n<=50;n++)if(!booked(n,i))c++;return c}
 var sg=$("sg"),h="";
@@ -311,7 +317,7 @@ var d0=new Date(),iso=new Date(Date.now()-d0.getTimezoneOffset()*6e4).toISOStrin
 var panes=document.querySelectorAll(".pane"),dots=document.querySelectorAll(".sp span");
 function go(n){step=n;panes.forEach(function(x,i){x.classList.toggle("on",i==n)});dots.forEach(function(x,i){x.classList.toggle("on",i<=n)});$("bb").style.visibility=n?"visible":"hidden";$("nx").style.display=n==2?"none":"";$("sw").style.display=n==2?"":"none"}
 $("nx").onclick=function(){go(step+1)};$("bb").onclick=function(){go(step-1)};
-$("sw").onclick=function(e){var ok=$("nm").value.trim()&&$("mb").value.length==10;$("er").textContent=ok?"":"Please enter your name and a 10-digit mobile number.";if(!ok){e.preventDefault();return}save()};
+$("sw").onclick=function(e){var ok=$("nm").value.trim()&&$("fn").value.trim()&&$("mb").value.length==10&&/^\d{4}$/.test($("pn4").value);$("er").textContent=ok?"":"Please enter your name, father's name, a 10-digit mobile number and a 4-digit PIN.";if(!ok){e.preventDefault();return}save()};
 go(0);
 render();
 /* focus timer */
@@ -320,6 +326,14 @@ function paint(){var m=Math.floor(left/60),s=left%60;$("tm").textContent=(m<10?"
 document.querySelectorAll(".modes button").forEach(function(b){b.onclick=function(){clearInterval(run);run=null;$("st").textContent="Start";document.querySelectorAll(".modes button").forEach(function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");mins=+b.dataset.m;left=mins*60;paint()}});
 $("st").onclick=function(){if(run){clearInterval(run);run=null;this.textContent="Start";return}if(left<=0)left=mins*60;this.textContent="Pause";run=setInterval(function(){left--;paint();if(left<=0){clearInterval(run);run=null;$("st").textContent="Start"}},1000)};
 })();
+</script>
+<script>
+(function(){var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",$=function(i){return document.getElementById(i)},P={"1":"Shift 1 (8 AM-2 PM)","2":"Shift 2 (2 PM-8 PM)","full":"Full day"},S={pending:"Request received. Waiting for confirmation.",approved:"Confirmed \u2713",rejected:"Not confirmed. Please call us."};
+function e(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+$("cb").onclick=function(){var m=$("cm").value,p=$("cp").value;if(m.length!=10||p.length!=4){$("cr").textContent="Enter your 10-digit mobile and 4-digit PIN.";return}$("cr").textContent="Checking...";
+fetch(SB+"/rest/v1/rpc/check_status",{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+SK,"Content-Type":"application/json"},body:JSON.stringify({p_mobile:m,p_pin:p})}).then(function(r){return r.json()}).then(function(d){
+if(!Array.isArray(d)||!d.length){$("cr").textContent="No booking found. Check your mobile number and PIN.";return}
+$("cr").innerHTML=d.map(function(x){return'<div style="border:1px solid #8885;border-radius:12px;padding:14px;margin-top:8px"><b>'+e(x.nm)+'</b><br>'+e(S[x.st])+'<br>'+P[x.plan]+' \u00b7 '+x.mon+' month'+(x.mon>1?"s":"")+' \u00b7 Seat '+(x.seat_no||"to be assigned")+'<br>Starts: '+e(x.starts||"-")+'<br>Fee \u20b9'+x.total_fee+' \u00b7 Paid \u20b9'+x.paid+' \u00b7 <b>Due \u20b9'+x.due+'</b></div>'}).join("")}).catch(function(){$("cr").textContent="Could not check right now. Please try again."})}})();
 </script>
 </body>
 </html>

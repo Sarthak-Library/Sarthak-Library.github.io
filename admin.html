@@ -1,29 +1,61 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><title>Admin</title>
-<style>:root{--bg:#fff;--ink:#2b2a26;--line:#e5e3dc;--ac:#44705b;color-scheme:light dark}
+<meta name="robots" content="noindex,nofollow"><title>Library Admin</title>
+<style>:root{--bg:#fff;--ink:#2b2a26;--line:#e5e3dc;--ac:#44705b;--bad:#c0392b;color-scheme:light dark}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1d1b;--ink:#eee;--line:#3a3b38;--ac:#6fa88f}}
-body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,sans-serif}
-button,input{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:none;color:inherit}
-button{cursor:pointer}.p{background:var(--ac);color:#fff;border-color:var(--ac)}
-.c{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}.b{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.t{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.on{background:var(--ac);color:#fff}small{opacity:.7}</style></head><body>
-<div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" placeholder="Email" style="width:100%;margin-bottom:8px"><input id="w" type="password" placeholder="Password" style="width:100%;margin-bottom:8px"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
-<div id="A" hidden><div class="t" id="tabs"></div><button onclick="csv()">Export CSV</button> <button onclick="out()">Logout</button><div id="o"></div></div>
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,sans-serif;max-width:900px;margin:auto}
+button,input,select,textarea{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit}
+button{cursor:pointer}.p{background:var(--ac);color:#fff;border-color:var(--ac)}.c{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.b,.t{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.on{background:var(--ac);color:#fff}small,.m{opacity:.7}.due{color:var(--bad)}
+.s{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.s div{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+dialog{max-width:520px;width:92%;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}dialog label{display:block;margin:6px 0;font-size:12px}dialog input,dialog select{width:100%;box-sizing:border-box;margin-top:2px}</style></head><body>
+<div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" placeholder="Email" style="width:100%;margin-bottom:8px;box-sizing:border-box"><input id="w" type="password" placeholder="Password" style="width:100%;margin-bottom:8px;box-sizing:border-box"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
+<div id="A" hidden><h2 style="margin:0 0 4px">Sarthak Library · Admin</h2><div class="s" id="st"></div>
+<input id="q" placeholder="Search name, father, mobile, seat, address..." style="width:100%;box-sizing:border-box" oninput="draw()">
+<div class="t" id="tabs"></div><div class="t"><button class="p" onclick="form()">+ Add student</button><button onclick="csv()">Export CSV</button><button onclick="out()">Logout</button></div><div id="o"></div></div>
+<dialog id="D"><h3 id="dt" style="margin-top:0"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
 <script>
-var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",tok=sessionStorage.t,rows=[],f="pending",P={"1":"Shift 1","2":"Shift 2","full":"Full day"};
-var $=function(i){return document.getElementById(i)};
+var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",tok=sessionStorage.t,rows=[],f="pending",$=function(i){return document.getElementById(i)},D=$("D");
+var P={"1":"Shift 1 (8-2)","2":"Shift 2 (2-8)","full":"Full day"},PR={"1":400,"2":400,"full":700},DS={1:1,3:.9,6:.85},LB={pending:"Requested",approved:"Confirmed",rejected:"Rejected"};
+var F=[["name","Student name"],["father_name","Father's name"],["mobile","Mobile (10 digits)"],["alt_mobile","Alternate / parent mobile"],["address","Address"],["exam","Preparing for"],["seat","Seat (1-50, blank = none)"],["start_date","Start date","date"],["total","Total fee ₹","number"],["pin","PIN (4 digits, for student check)"],["notes","Notes"]];
 function api(p,o){o=o||{};o.headers={apikey:SK,Authorization:"Bearer "+(tok||SK),"Content-Type":"application/json",Prefer:"return=minimal"};return fetch(SB+p,o)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Error: "+(d.msg||d.error_description||d.message||JSON.stringify(d))}).catch(function(e){$("m").textContent="Network error: "+e.message})}
 $("w").addEventListener("keydown",function(e){if(e.key=="Enter")login()});
 function out(){sessionStorage.clear();location.reload()}
-function load(){api("/rest/v1/bookings?select=*&order=created_at.desc").then(function(r){if(r.status==401){out();return}return r.json()}).then(function(d){if(!d)return;if(!Array.isArray(d)){$("L").hidden=true;$("A").hidden=false;$("o").innerHTML='<p style="color:#c0392b"><b>Database error:</b> '+esc(d.message||d.hint||JSON.stringify(d))+"</p>";return}rows=d;$("L").hidden=true;$("A").hidden=false;draw()})}
-function draw(){$("tabs").innerHTML=["pending","approved","rejected","all"].map(function(k){var n=rows.filter(function(r){return k=="all"||r.status==k}).length;return'<button class="'+(k==f?"on":"")+'" onclick="f=\''+k+'\';draw()">'+k+" ("+n+")</button>"}).join("");
-$("o").innerHTML=rows.filter(function(r){return f=="all"||r.status==f}).map(function(r){var due=r.total-r.fee_paid;return'<div class="c"><b>'+esc(r.name)+'</b> · <a href="tel:'+r.mobile+'">'+r.mobile+'</a> <small>'+r.status+'</small><br>'+P[r.plan_key]+' · '+r.months+' mo · Seat '+(r.seat||"any")+' · starts '+(r.start_date||"-")+'<br>'+esc(r.exam||"")+(r.referred_by?' · ref: '+esc(r.referred_by):"")+'<br>Total ₹'+r.total+' · Paid ₹'+r.fee_paid+' · <b>Due ₹'+due+'</b>'+(r.notes?'<br><small>'+esc(r.notes)+'</small>':"")+'<div class="b">'+(r.status!="approved"?'<button class="p" onclick="st(\''+r.id+'\',\'approved\')">Approve</button>':"")+(r.status!="rejected"?'<button onclick="st(\''+r.id+'\',\'rejected\')">Reject</button>':"")+'<button onclick="fee(\''+r.id+'\')">Fees / seat / notes</button><button onclick="del(\''+r.id+'\')">Delete</button></div></div>'}).join("")||"<p>Nothing here.</p>"}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function up(id,b){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(function(r){if(!r.ok)alert("Failed to save");load()})}
-function st(id,s){var r=rows.find(function(x){return x.id==id});if(s=="approved"&&r.seat){var k=rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)});if(k&&!confirm("Seat "+r.seat+" is already taken in this shift. Approve anyway?"))return}up(id,{status:s})}
-function fee(id){var r=rows.find(function(x){return x.id==id}),p=prompt("Fees paid so far (₹)",r.fee_paid);if(p===null)return;var s=prompt("Seat number (1-50, blank = none)",r.seat||"");if(s===null)return;var n=prompt("Notes",r.notes||"");if(n===null)return;up(id,{fee_paid:+p||0,seat:+s||null,notes:n})}
-function del(id){if(confirm("Delete permanently?"))api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(load)}
-function csv(){var h=["name","mobile","exam","plan_key","months","seat","start_date","total","fee_paid","status","notes","created_at"];var t=[h.join(",")].concat(rows.map(function(r){return h.map(function(k){return'"'+String(r[k]==null?"":r[k]).replace(/"/g,'""')+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
+function load(){api("/rest/v1/bookings?select=*,payments(*)&order=created_at.desc").then(function(r){if(r.status==401){out();return}return r.json()}).then(function(d){if(!d)return;$("L").hidden=true;$("A").hidden=false;if(!Array.isArray(d)){$("o").innerHTML='<p class="due"><b>Database error:</b> '+esc(d.message||JSON.stringify(d))+"</p>";return}rows=d;draw()})}
+function paid(r){return(r.payments||[]).reduce(function(a,p){return a+p.amount},0)}
+function due(r){return(r.total||0)-paid(r)}
+function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z");d.setUTCMonth(d.getUTCMonth()+r.months);return d.toISOString().slice(0,10)}
+function match(r){var q=$("q").value.toLowerCase();return!q||[r.name,r.father_name,r.mobile,r.alt_mobile,r.address,r.seat,r.exam].join(" ").toLowerCase().indexOf(q)>-1}
+function draw(){var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
+$("st").innerHTML="<div><b>"+ap.length+"</b><br><small>Confirmed students</small></div><div><b>₹"+col+"</b><br><small>Collected</small></div><div class='due'><b>₹"+dd+"</b><br><small>Total due</small></div>";
+var T=[["pending","Requested"],["approved","Confirmed"],["due","Fees due"],["rejected","Rejected"],["all","All"]];
+function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:r.status==k)}
+$("tabs").innerHTML=T.map(function(t){return'<button class="'+(t[0]==f?"on":"")+'" onclick="f=\''+t[0]+'\';draw()">'+t[1]+" ("+rows.filter(function(r){return vis(r,t[0])}).length+")</button>"}).join("");
+$("o").innerHTML=rows.filter(function(r){return vis(r,f)&&match(r)}).map(function(r){var d=due(r),i="'"+r.id+"'";
+var pl=(r.payments||[]).slice().sort(function(a,b){return a.paid_on<b.paid_on?-1:1}).map(function(p){return"₹"+p.amount+" "+esc(p.mode)+" "+p.paid_on+' <a href="#" onclick="dp(\''+p.id+'\');return false">✕</a>'}).join(" · ");
+return'<div class="c"><b>'+esc(r.name)+"</b> <small>"+LB[r.status]+"</small><br>Father: "+esc(r.father_name||"-")+' · <a href="tel:'+r.mobile+'">'+r.mobile+"</a>"+(r.alt_mobile?" / "+esc(r.alt_mobile):"")+"<br>"+esc(r.address||"")+'<br><span class="m">'+esc(r.exam||"")+"</span><br>"+P[r.plan_key]+" · "+r.months+" mo · Seat "+(r.seat||"-")+" · "+(r.start_date||"-")+" → "+endD(r)+"<br>Total ₹"+(r.total||0)+" · Paid ₹"+paid(r)+" · <b"+(d>0?' class="due"':"")+">Due ₹"+d+"</b>"+(pl?'<br><small>Payments: '+pl+"</small>":"")+(r.notes?"<br><small>"+esc(r.notes)+"</small>":"")+
+'<div class="b">'+(r.status!="approved"?'<button class="p" onclick="stt('+i+',\'approved\')">Confirm</button>':"")+(r.status!="rejected"?'<button onclick="stt('+i+',\'rejected\')">Reject</button>':"")+'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="wa('+i+')">WhatsApp</button><button onclick="form('+i+')">Edit</button><button onclick="del('+i+')">Delete</button></div></div>'}).join("")||"<p>Nothing here.</p>"}
+function chk(r){if(!r.ok)r.text().then(alert);load()}
+function up(id,b){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
+function stt(id,s){var r=rows.find(function(x){return x.id==id});if(s=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;up(id,{status:s})}
+function pay(id){var a=prompt("Amount received (₹)");if(!a||!+a)return;var m=prompt("Mode (Cash / UPI)","Cash");api("/rest/v1/payments",{method:"POST",body:JSON.stringify({booking_id:id,amount:Math.round(+a),mode:m||"Cash"})}).then(chk)}
+function dp(id){if(confirm("Remove this payment entry?"))api("/rest/v1/payments?id=eq."+id,{method:"DELETE"}).then(chk)}
+function del(id){if(confirm("Delete this student and all payments permanently?"))api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(chk)}
+function wa(id){var r=rows.find(function(x){return x.id==id}),t="Hello "+r.name+", this is Sarthak Library. ";
+if(r.status=="approved")t+="Your seat is CONFIRMED.\nPlan: "+P[r.plan_key]+", "+r.months+" month(s)\nSeat: "+(r.seat||"to be assigned")+"\nStarts: "+(r.start_date||"-")+"\nFee: ₹"+r.total+" | Paid: ₹"+paid(r)+" | Due: ₹"+due(r)+"\nYou can check your booking on our website with your mobile number and PIN.";
+else if(r.status=="rejected")t+="We could not confirm your request for the selected seat/shift. Please call us and we will help you with another option.";
+else t+="We received your seat request. We will confirm it shortly.";
+window.open("https://wa.me/91"+r.mobile+"?text="+encodeURIComponent(t),"_blank")}
+function form(id){var r=id?rows.find(function(x){return x.id==id}):{status:"approved",plan_key:"1",months:1};D.dataset.id=id||"";$("dt").textContent=id?"Edit student":"Add student";$("de").textContent="";
+function sel(k,o,l){return"<label>"+l+'<select id="f_'+k+'">'+o.map(function(x){return'<option value="'+x[0]+'">'+x[1]+"</option>"}).join("")+"</select></label>"}
+$("df").innerHTML=F.map(function(x){return'<label>'+x[1]+'<input id="f_'+x[0]+'" type="'+(x[2]||"text")+'"></label>'}).join("")+sel("plan_key",[["1","Shift 1"],["2","Shift 2"],["full","Full day"]],"Plan")+sel("months",[[1,"1 month"],[3,"3 months"],[6,"6 months"]],"Duration")+sel("status",[["pending","Requested"],["approved","Confirmed"],["rejected","Rejected"]],"Status");
+F.concat([["plan_key"],["months"],["status"]]).forEach(function(x){$("f_"+x[0]).value=r[x[0]]==null?"":r[x[0]]});
+if(!id)$("f_total").value=calc();["f_plan_key","f_months"].forEach(function(k){$(k).onchange=function(){$("f_total").value=calc()}});D.showModal()}
+function calc(){return Math.round(PR[$("f_plan_key").value]*$("f_months").value*DS[$("f_months").value])}
+function saveF(){var b={};F.forEach(function(x){b[x[0]]=$("f_"+x[0]).value.trim()||null});["plan_key","status"].forEach(function(k){b[k]=$("f_"+k).value});b.months=+$("f_months").value;b.seat=b.seat?+b.seat:null;b.total=+b.total||0;
+if(!b.name||!/^\d{10}$/.test(b.mobile||"")){$("de").textContent="Name and a 10-digit mobile are required.";return}if(b.pin&&!/^\d{4}$/.test(b.pin)){$("de").textContent="PIN must be 4 digits.";return}if(b.seat&&(b.seat<1||b.seat>50)){$("de").textContent="Seat must be 1-50.";return}
+var id=D.dataset.id;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{method:"POST",body:JSON.stringify(b)}).then(chk)}
+function csv(){var h=["name","father_name","mobile","alt_mobile","address","exam","plan_key","months","seat","start_date","end_date","total","paid","due","status","notes","created_at"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r)});return h.map(function(k){return'"'+String(r[k]==null?"":r[k]).replace(/"/g,'""')+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
 if(tok)load();
 </script></body></html>
