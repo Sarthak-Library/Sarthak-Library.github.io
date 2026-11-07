@@ -142,6 +142,7 @@ footer .c{font-size:11px;color:#F0F7F3;text-align:center;margin-top:14px}
 <ul><li><a href="#facilities" data-i="nav1">Facilities</a></li><li><a href="#plans" data-i="nav2">Plans &amp; fees</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact" data-i="nav4">Contact</a></li></ul>
 <div class="tools"><a class="btn dk" href="#booking" data-i="book">Book a seat</a></div>
 </div></nav>
+<div id="nt" hidden style="background:#DDE7DB;color:#2C4A3E;text-align:center;padding:8px 16px;font-size:14px"></div>
 
 <header class="hero" id="top"><div class="w g">
 <div>
@@ -320,6 +321,12 @@ function paint(){var m=Math.floor(left/60),s=left%60;$("tm").textContent=(m<10?"
 document.querySelectorAll(".modes button").forEach(function(b){b.onclick=function(){clearInterval(run);run=null;$("st").textContent="Start";document.querySelectorAll(".modes button").forEach(function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");mins=+b.dataset.m;left=mins*60;paint()}});
 $("st").onclick=function(){if(run){clearInterval(run);run=null;this.textContent="Start";return}if(left<=0)left=mins*60;this.textContent="Pause";run=setInterval(function(){left--;paint();if(left<=0){clearInterval(run);run=null;$("st").textContent="Start"}},1000)};
 })();
+</script>
+<script>
+(function(){var NOTICE="",CHANNEL_URL="",el=document.getElementById("nt"),h="";
+if(NOTICE)h+=NOTICE.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+if(CHANNEL_URL)h+=(h?" \u00b7 ":"")+'<a href="'+CHANNEL_URL+'" target="_blank" rel="noopener">Join our WhatsApp channel for updates</a>';
+if(h){el.innerHTML=h;el.hidden=false}})();
 </script>
 </body>
 </html>
