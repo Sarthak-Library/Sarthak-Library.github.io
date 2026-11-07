@@ -10,7 +10,7 @@ button{cursor:pointer}.p{background:var(--ac);color:#fff;border-color:var(--ac)}
 <div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" placeholder="Email" style="width:100%;margin-bottom:8px"><input id="w" type="password" placeholder="Password" style="width:100%;margin-bottom:8px"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
 <div id="A" hidden><div class="t" id="tabs"></div><button onclick="csv()">Export CSV</button> <button onclick="out()">Logout</button><div id="o"></div></div>
 <script>
-var SB="",SK="",tok=sessionStorage.t,rows=[],f="pending",P={"1":"Shift 1","2":"Shift 2","full":"Full day"};
+var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",tok=sessionStorage.t,rows=[],f="pending",P={"1":"Shift 1","2":"Shift 2","full":"Full day"};
 var $=function(i){return document.getElementById(i)};
 function api(p,o){o=o||{};o.headers={apikey:SK,Authorization:"Bearer "+(tok||SK),"Content-Type":"application/json",Prefer:"return=minimal"};return fetch(SB+p,o)}
 function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Error: "+(d.msg||d.error_description||d.message||JSON.stringify(d))}).catch(function(e){$("m").textContent="Network error: "+e.message})}
