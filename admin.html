@@ -29,7 +29,7 @@ function load(){api("/rest/v1/bookings?select=*,payments(*)&order=created_at.des
 function td(){var d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function paid(r){return(r.payments||[]).reduce(function(a,p){return a+p.amount},0)}
 function due(r){return(r.total||0)+(r.extra||0)-paid(r)}
-function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z");d.setUTCMonth(d.getUTCMonth()+r.months);return d.toISOString().slice(0,10)}
+function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z"),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+r.months);d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate()));return d.toISOString().slice(0,10)}
 function dl(r){return r.start_date?Math.ceil((new Date(endD(r))-new Date(td()))/864e5):999}
 function exp(r){if(r.status!="approved"||!r.start_date)return"";var d=dl(r);return d<0?' <b class="due">EXPIRED</b>':d<=7?' <b class="due">(expires in '+d+' days)</b>':""}
 function match(r){var q=$("q").value.toLowerCase();return!q||[r.member_id,r.name,r.mobile,r.seat,r.exam].join(" ").toLowerCase().indexOf(q)>-1}
