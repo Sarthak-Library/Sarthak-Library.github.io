@@ -228,7 +228,7 @@ nav{background:rgba(16,31,54,.66);-webkit-backdrop-filter:blur(18px) saturate(17
 .art>svg:not(.badge){transition:transform .15s ease-out;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
 @media(max-width:600px){.aurora i{filter:blur(60px)}}
 @media(prefers-reduced-motion:reduce){.aurora i,.mk,.pc.on{animation:none!important}.js h2.rv{filter:none}}
-</style>
+.tools{display:flex;gap:8px;align-items:center}.btn.dk.lg{background:transparent;color:var(--ivory);border-color:rgba(247,245,239,.45);box-shadow:none}.btn.dk.lg:hover{background:rgba(247,245,239,.12);border-color:var(--gold);color:var(--gold)}@media(max-width:480px){.logo{font-size:17px}nav .btn.dk{padding:9px 12px;font-size:12px}.tools{gap:6px}}</style>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div><div id="sp" aria-hidden="true"></div>
@@ -236,7 +236,7 @@ nav{background:rgba(16,31,54,.66);-webkit-backdrop-filter:blur(18px) saturate(17
 <nav><div class="w">
 <a class="logo" href="#top"><i></i>Sarthak Library</a>
 <ul><li><a href="#facilities" data-i="nav1">Facilities</a></li><li><a href="#plans" data-i="nav2">Plans &amp; fees</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact" data-i="nav4">Contact</a></li></ul>
-<div class="tools"><a class="btn dk" href="#booking" data-i="book">Book a seat</a></div>
+<div class="tools"><a class="btn dk" href="#booking" data-i="book">Book a seat</a><a class="btn dk lg" href="portal.html#student">Student login</a></div>
 </div></nav>
 <div id="nt" hidden style="background:rgba(197,164,109,.18);color:#101F36;text-align:center;padding:10px 16px;font-size:14px;border-bottom:1px solid rgba(197,164,109,.45)"></div>
 
@@ -362,7 +362,7 @@ nav{background:rgba(16,31,54,.66);-webkit-backdrop-filter:blur(18px) saturate(17
 
 <footer id="site-footer"><div class="w fg4">
 <div><h3>Sarthak Library and Self Study Zone</h3><p>A calm, disciplined self-study space in Shahjahanpur for competitive exams, government jobs and college studies. Come with a goal. Study with dedication.</p><button class="btn" id="sh"><svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.600 13.500l6.800 4M15.400 6.500l-6.800 4"/></svg>Share this page</button></div>
-<div><h4>Quick links</h4><ul><li><a href="#facilities">Facilities</a></li><li><a href="#plans">Plans &amp; fees</a></li><li><a href="#booking">Reserve a seat</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+<div><h4>Quick links</h4><ul><li><a href="#facilities">Facilities</a></li><li><a href="#plans">Plans &amp; fees</a></li><li><a href="#booking">Reserve a seat</a></li><li><a href="#faq">FAQ</a></li><li><a href="portal.html#student">Student login</a></li><li><a href="portal.html#admin">Admin</a></li></ul></div>
 <div><h4>Contact</h4><p><a href="tel:+919450860232">+91 94508 60232</a><br><a href="tel:+919616151480">+91 96161 51480</a></p><p>Open daily, 8:00 AM – 8:00 PM</p></div>
 <div><h4>Address</h4><p>355, Moh. Gangapuram Colony, Tilhar Zai, Near Malik Montessori School, Loharon Wala Chauraha, Shahjahanpur, Uttar Pradesh 242001</p><a class="lk" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Sarthak+Library+Gangapuram+Colony+Tilhar+Zai+Shahjahanpur+242001">Open in Google Maps →</a></div>
 </div><div class="w fb">© 2026 Sarthak Library and Self Study Zone. All rights reserved.</div></footer>
@@ -404,7 +404,7 @@ function rpc(f,body){return fetch(SB+"/rest/v1/rpc/"+f,{method:"POST",keepalive:
 function cnt(){RES=BOOKED.length;LEFT=Math.max(0,20-RES);$("cl").textContent=RES+" reservations · "+LEFT+" of 20 opening seats left";var fh="";for(var k=0;k<20;k++)fh+="<i"+(k<RES?' class="on"':k==RES?' class="nx"':"")+"></i>";$("fd").innerHTML=fh}
 cnt();
 rpc("get_taken").then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)){BOOKED=d.map(function(x){return[x.seat,x.plan_key]});cnt();render()}}).catch(function(){});
-function save(){rpc("submit_booking",{p_name:$("nm").value.trim(),p_mobile:$("mb").value,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:seat||null,p_start:$("sd").value||null,p_trial:$("tr").checked,p_ref:$("rf").value,p_total:Math.round(total())}).then(function(r){$("er").innerHTML=r.ok?'<div class="stat"><span class="chip pend">Pending approval</span><h4>Request received</h4><p>We will call you once your reservation is approved. Your seat is not confirmed until then.</p><ol><li>Send the WhatsApp message that just opened.</li><li>Wait for our call to confirm your seat.</li><li><a href="https://forms.gle/Den5ttpCaKE7umdX6" target="_blank" rel="noopener"><b>Complete your registration form</b></a>.</li></ol></div>':'<div class="stat bad"><h4>Could not save online</h4><p>Please send the WhatsApp message, or call us on +91 94508 60232.</p></div>'}).catch(function(){$("er").innerHTML='<div class="stat bad"><h4>Could not save online</h4><p>Please send the WhatsApp message, or call us on +91 94508 60232.</p></div>'})}
+function save(){rpc("submit_booking",{p_name:$("nm").value.trim(),p_mobile:$("mb").value,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:seat||null,p_start:$("sd").value||null,p_trial:$("tr").checked,p_ref:$("rf").value,p_total:Math.round(total())}).then(function(r){$("er").innerHTML=r.ok?'<div class="stat"><span class="chip pend">Pending approval</span><h4>Request received</h4><p>We will message you on WhatsApp with your seat number and student login once your reservation is approved. Your seat is not confirmed until then.</p><ol><li>Send the WhatsApp message that just opened.</li><li>Wait for our call to confirm your seat.</li><li><a href="https://forms.gle/Den5ttpCaKE7umdX6" target="_blank" rel="noopener"><b>Complete your registration form</b></a>.</li></ol></div>':'<div class="stat bad"><h4>Could not save online</h4><p>Please send the WhatsApp message, or call us on +91 94508 60232.</p></div>'}).catch(function(){$("er").innerHTML='<div class="stat bad"><h4>Could not save online</h4><p>Please send the WhatsApp message, or call us on +91 94508 60232.</p></div>'})}
 function booked(n,i){var k=KEYS[i];return BOOKED.some(function(b){return +b[0]===n&&(k=="full"||b[1]=="full"||b[1]==k)})}
 function avail(i){var c=0;for(var n=1;n<=50;n++)if(!booked(n,i))c++;return c}
 var sg=$("sg"),h="";
