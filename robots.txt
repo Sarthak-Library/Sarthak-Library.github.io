@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /portal.html
 
 Sitemap: https://sarthak-library.github.io/sitemap.xml
