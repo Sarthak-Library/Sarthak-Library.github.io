@@ -307,6 +307,41 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 @media(max-width:820px){#app .lg{grid-template-columns:1fr;min-height:0}#app .la{padding:26px;gap:18px}#app .la:before,#app .la:after{display:none}}
 @media(prefers-reduced-motion:reduce){#app *{animation:none!important;transition:none!important}}
 </style>
+<style id="dark-polish">
+/* Dark mode polish: only applies when data-theme=dark */
+html[data-theme=dark] .art>svg:not(.badge){filter:brightness(.6) saturate(.9) contrast(1.05);border-color:rgba(255,255,255,.14)}
+html[data-theme=dark] .fg .ib{background:rgba(197,164,109,.14);border:1px solid rgba(197,164,109,.35)}
+html[data-theme=dark] .total{background:#0F1A2C;border-color:rgba(255,255,255,.18);color:#B4BFCE}
+html[data-theme=dark] .total b{color:#F3F0E8}
+html[data-theme=dark] .sv{color:#8FD0A9}
+html[data-theme=dark] .er{color:#ff9f98}
+html[data-theme=dark] .er:has(a){color:#8FD0A9;background:rgba(143,208,169,.1)}
+html[data-theme=dark] .fd i{background:rgba(255,255,255,.18)}
+html[data-theme=dark] .fd i.on{background:var(--gold)}
+html[data-theme=dark] .fd i.nx{background:transparent}
+html[data-theme=dark] .sp span{border-top-color:rgba(255,255,255,.2)}
+html[data-theme=dark] .sp span.on{border-top-color:var(--gold)}
+html[data-theme=dark] .st{background:#0F1A2C;border-color:#5A6E8F;color:#EDE9DF}
+html[data-theme=dark] .st:hover{border-color:var(--gold)}
+html[data-theme=dark] .st.sel{background:#2F5A47;border-color:#4F8A6B;color:#fff}
+html[data-theme=dark] .st.tk{color:#8795AA;border-color:rgba(255,255,255,.14);opacity:.6}
+html[data-theme=dark] .st i.b{border-left-color:rgba(255,255,255,.22)}
+html[data-theme=dark] .st i.x{background:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 3px,transparent 3px 6px)}
+html[data-theme=dark] .st.sel i.x{background:repeating-linear-gradient(45deg,rgba(0,0,0,.35) 0 3px,transparent 3px 6px)}
+html[data-theme=dark] .stat{border-left-color:#4F8A6B}
+html[data-theme=dark] .stat.bad{border-left-color:#ff9f98;border-color:rgba(255,159,152,.45)}
+html[data-theme=dark] .chip.pend{background:rgba(197,164,109,.22);color:#EBD3A2}
+html[data-theme=dark] .pass::before,html[data-theme=dark] .pass::after{background:var(--card)}
+html[data-theme=dark] footer .btn:not(.ghost):not(.lg){color:#F7F5EF;border-color:rgba(247,245,239,.45)}
+html[data-theme=dark] footer .btn:not(.ghost):not(.lg):hover{color:var(--gold);border-color:var(--gold);background:transparent}
+html[data-theme=dark] .form input:focus,html[data-theme=dark] .form select:focus{background:#16233A;border-color:var(--gold);box-shadow:0 0 0 3px rgba(197,164,109,.35)}
+html[data-theme=dark] .form .chk input{accent-color:var(--gold)}
+html[data-theme=dark] :is(.btn,a,input,select,summary,button):focus-visible{outline-color:var(--gold)}
+html[data-theme=dark] ::selection{background:rgba(197,164,109,.45);color:#fff}
+html[data-theme=dark] input::placeholder,html[data-theme=dark] textarea::placeholder{color:#8795AA}
+html[data-theme=dark] .wa{background:#1F3A2E;border-color:rgba(255,255,255,.25)}
+html[data-theme=dark] .pass{background:radial-gradient(circle at 100% 0,rgba(197,164,109,.2),transparent 55%),#101F36;border:1px solid rgba(197,164,109,.35)}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a><div id="sp" aria-hidden="true"></div>
