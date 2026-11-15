@@ -307,7 +307,7 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 <div class="stats"><div><b>50</b><span>Personal seats</span></div><div><b>100 Mbps</b><span>Wi-Fi</span></div><div><b>8am–8pm</b><span>Open daily</span></div></div>
 </div>
 <div class="art">
-<svg class="badge" viewBox="0 0 120 120" role="img" aria-label="First 20 students get 100 rupees off"><circle cx="60" cy="60" r="57" fill="#C5A46D" stroke="#101F36" stroke-width="2"/><circle cx="60" cy="60" r="45" fill="none" stroke="#101F36" stroke-width="2" opacity=".45"/><circle cx="60" cy="60" r="34" fill="#F7F5EF" opacity=".3"/><path d="M36 40c12-10 18-17 24-17 12 0 20 9 20 18 0 9-7 15-15 18 9 2 15 8 15 17 0 12-9 20-22 20-10 0-17-4-22-13l10-6c3 6 8 8 13 8 5 0 9-3 9-8 0-6-5-9-11-10l-17-3 2-9 16 3c8 1 13-2 13-8 0-6-5-8-10-8-7 0-12 5-14 10l-10-4zm28 12h12v8h-12v10h-9v-10h-12v-8h12v-10h9v10z" fill="#101F36"/><text x="60" y="98" text-anchor="middle" font-size="10" font-family="system-ui" font-weight="700" fill="#101F36">₹100 OFF</text></svg>
+<svg class="badge" viewBox="0 0 120 120" role="img" aria-label="First 20 students get 100 rupees off"><circle cx="60" cy="60" r="57" fill="#C5A46D" stroke="#101F36" stroke-width="2"/><circle cx="60" cy="60" r="45" fill="none" stroke="#101F36" stroke-width="2" opacity=".45"/><circle cx="60" cy="60" r="34" fill="#F7F5EF" opacity=".3"/><text x="60" y="70" text-anchor="middle" font-size="25" font-family="Georgia,serif" font-weight="800" fill="#101F36">₹100</text><text x="60" y="88" text-anchor="middle" font-size="11" font-family="system-ui,sans-serif" font-weight="800" letter-spacing="1.5" fill="#101F36">OFF</text></svg>
 <span class="note">go on, press Start</span>
 <svg viewBox="0 0 520 440" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A bright self-study library with numbered wooden desks, books, lamps and plants">
 <defs>
@@ -329,7 +329,7 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 <g transform="translate(0 0)"><rect x="190" y="150" width="64" height="61" rx="3" fill="url(#pt)"/><rect x="190" y="150" width="64" height="5" fill="#E2C597"/><rect x="196" y="160" width="52" height="7" rx="2" fill="#F5E4BF"/><rect x="200" y="174" width="44" height="11" rx="2" fill="#F6E7C6"/></g>
 <rect x="36" y="222" width="96" height="91" rx="3" fill="url(#pt)"/><rect x="36" y="222" width="96" height="5" fill="#E2C597"/><rect x="46" y="234" width="32" height="22" rx="2" fill="#F6E7C6"/><rect x="82" y="234" width="32" height="22" rx="2" fill="#F6E7C6"/><rect x="46" y="261" width="32" height="22" rx="2" fill="#F6E7C6"/><rect x="82" y="261" width="32" height="22" rx="2" fill="#F6E7C6"/><path d="M14 206L170 430H20z" fill="#FFF8DC" opacity=".22"/>
 </svg>
-<div class="focus" role="group" aria-label="Focus session timer"><p class="eb">Focus session</p><span class="tm" id="tm">25:00</span><div class="modes"><button aria-pressed="true" data-m="25">25m</button><button data-m="45">45m</button><button data-m="60">60m</button></div><button class="btn" id="st" type="button">Start</button><small>Quiet. Focus. Repeat.</small></div>
+<div class="focus" role="group" aria-label="Focus session timer"><p class="eb">Focus session</p><span class="tm" id="tm">25:00</span><div class="modes"><button aria-pressed="true" data-m="25">25m</button><button data-m="45">45m</button><button data-m="60">60m</button></div><button class="btn" id="st" type="button">Start</button><button class="modes-reset" id="rs" type="button" style="background:none;border:0;color:var(--slate);font:500 13px var(--ui);cursor:pointer;text-decoration:underline">Reset</button><small>Quiet. Focus. Repeat.</small><a href="/pomodoro-timer.html" style="font-size:12.5px;color:var(--slate)">More free timers →</a></div>
 </div></div></header>
 
 <div class="strip"><div class="w">
@@ -384,7 +384,7 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 <div class="pane">
 <div class="pass full"><div class="pmain"><div class="ph"><b>Sarthak Library</b><span>Member pass</span></div><div class="pn" id="pn">Your name</div><div class="pm"><div><small>Shift</small><b id="ps">Any</b></div><div><small>Seat</small><b id="psn">Unassigned</b></div></div></div><div class="pstub"><b id="pb">1</b><span>Opening pass</span><div class="stamp">Verified</div></div></div>
 <label>Your name<input id="nm" maxlength="60" placeholder="e.g. Aman Verma" autocomplete="name"></label>
-<label>Mobile number<input id="mb" placeholder="10-digit number" inputmode="numeric" maxlength="10" autocomplete="tel"></label>
+<label>Mobile number<input id="mob" placeholder="10-digit number" inputmode="numeric" maxlength="10" autocomplete="tel"></label>
 <label class="full">Preparing for<select id="pf"><option>UPSC / State PCS</option><option>SSC</option><option>Defence (NDA / CDS / Agniveer)</option><option>Police</option><option>Banking</option><option>College / Other</option></select></label>
 <label class="full">Referred by (friend's name, both save ₹100)<input id="rf" placeholder="Optional"></label>
 <p class="er full" id="er" role="status" aria-live="polite"></p>
@@ -406,7 +406,7 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 <div id="fq"></div>
 </div></section>
 
-<section aria-labelledby="exp" style="padding:40px 0"><div class="w"><h2 id="exp" style="margin-bottom:14px">Explore our study spaces</h2><ul style="columns:2;list-style:none;padding:0;margin:0;line-height:1.8;color:var(--slate)"><li>Exclusive silent study zones</li><li>Airy reading corners</li><li>Desk lamps and comfortable chairs</li><li>Clean washroom and RO area</li><li>Daily attendance tracking</li><li>Supportive, exam-focused environment</li></ul></div></section>
+<section aria-labelledby="exp" style="padding:40px 0"><div class="w"><h2 id="exp" style="margin-bottom:14px">Explore our study spaces</h2><ul style="columns:2;list-style:none;padding:0;margin:0;line-height:1.8;color:var(--slate)"><li>Exclusive silent study zones</li><li>Airy reading corners</li><li>Desk lamps and comfortable chairs</li><li>Clean washroom and RO area</li><li>Daily attendance tracking</li><li>Supportive, exam-focused environment</li></ul><h3 style="margin:22px 0 8px">Free study tools</h3><ul style="columns:2;list-style:none;padding:0;margin:0;line-height:2"><li><a href="/pomodoro-timer.html">Pomodoro Timer</a></li><li><a href="/online-timer.html">Online Timer</a></li><li><a href="/study-timer.html">Study Timer</a></li><li><a href="/25-minute-timer.html">25 Minute Timer</a></li><li><a href="/exam-timer-mock-test.html">Mock Test Timer</a></li></ul></div></section>
 
 <footer id="site-footer"><div class="w fg4">
 <div><h3>Sarthak Library and Self Study Zone</h3><p>A calm, disciplined self-study space in Shahjahanpur for competitive exams, government jobs and college studies. Come with a goal. Study with dedication.</p></div>
@@ -445,12 +445,12 @@ function render(){
 $("pg").innerHTML=plans.map(function(p,i){return'<div class="pc'+(i==sel?" on":"")+'" data-i="'+i+'"><div class="t"><h3>'+p[0]+"</h3>"+'<span class="bd">First 20 students · Save ₹100</span>'+'</div><div class="h">'+p[1]+'</div><div class="pr">'+fmt(p[2])+'<small>/ month</small></div><div class="old">Regular '+fmt(p[3])+'</div><div class="s">'+(i==0?"Best for morning prep":"Best for steady focus")+'</div><button class="btn" type="button">Choose plan</button></div>'}).join("");
 $("pl").innerHTML=plans.map(function(p,i){return"<option value="+i+(i==sel?" selected":"")+">"+p[0]+" · "+fmt(p[2])+"</option>"}).join("");
 $("tl").textContent="Total for "+dur+(dur==1?" month":" months");$("tv").textContent=fmt(total());var q=plans[sel],sv=(q[3]||q[2])*dur-total();$("sv").textContent=sv>0?"You save ₹"+fmt(sv)+" with the opening offer.":"";if(seat&&booked(seat,sel)){seat=0;$("ss").textContent="That seat was just taken; please pick another."}}
-function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mb").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+"\nDuration: "+dur+" month(s)\nSeat: "+(seat||"Any")+"\nStart date: "+($("sd").value||"-")+"\nReferrer: "+($("rf").value||"-");$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t)}
-$("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){sel=+c.dataset.i;render();$("pl").value=sel;$("sw").style.display="none";}}
-$("pl").onchange=function(){sel=+this.value;render();}
-$("du").onchange=function(){dur=+this.value;render();}
-["nm","mb","pf","rf","sd"].forEach(function(i){if($(i))$(i).addEventListener("input",link);if($(i))$(i).addEventListener("change",link)});
-$("mb").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"")});
+function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mob").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+"\nDuration: "+dur+" month(s)\nSeat: "+(seat||"Any")+"\nStart date: "+($("sd").value||"-")+"\nReferrer: "+($("rf").value||"-");$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t)}
+$("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){sel=+c.dataset.i;render();$("pl").value=sel;$("sw").style.display="none";}};
+$("pl").onchange=function(){sel=+this.value;render();};
+$("du").onchange=function(){dur=+this.value;render();};
+["nm","mob","pf","rf","sd"].forEach(function(i){if($(i))$(i).addEventListener("input",link);if($(i))$(i).addEventListener("change",link)});
+$("mob").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"")});
 $("wa").href="https://wa.me/"+NUM+"?text="+encodeURIComponent("Hello Sarthak Library, I have a question.");
 /* booking wizard */
 var seat=0,step=0;
@@ -464,22 +464,25 @@ sg.onclick=function(e){var b=e.target.closest(".st");if(!b||b.disabled)return;va
 var d0=new Date(),iso=new Date(Date.now()-d0.getTimezoneOffset()*6e4).toISOString().slice(0,10);$("sd").min=iso;$("sd").value=iso;
 var panes=document.querySelectorAll(".pane"),dots=document.querySelectorAll(".sp span");
 function go(n){step=n;panes.forEach(function(x,i){x.classList.toggle("on",i==n)});dots.forEach(function(x,i){x.classList.toggle("on",i<=n)});$("bb").style.visibility=n?"visible":"hidden";$("nx").style.display=n<2?"inline-flex":"none";$("sw").style.display=n===2?"inline-flex":"none";if(n===2){link();$("pn").textContent=$("nm").value||"Your name";$("ps").textContent=plans[sel][0];$("psn").textContent=seat||"Unassigned";}}
-$("nx").onclick=function(){if(step===1&&(!seat||!$("nm").value||!$("mb").value)){}go(step+1)};$("bb").onclick=function(){go(step-1)};
-$("sw").onclick=function(e){var nm=$("nm").value.trim(),mb=$("mb").value,nok=nm.length>=2&&nm.length<=60,mok=/^[6-9]\d{9}$/.test(mb);$("nm").setAttribute("aria-invalid",!nok);$("mb").setAttribute("aria-invalid",!mok);$("er").textContent=nok&&mok?"Please send the form to WhatsApp to confirm your seat request.":"Please enter a valid name and 10-digit mobile number.";if(nok&&mok){link();window.open($("sw").href,"_blank");}}
+$("nx").onclick=function(){if(step===1&&(!seat||!$("nm").value||!$("mob").value)){}go(step+1)};$("bb").onclick=function(){go(step-1)};
+$("sw").onclick=function(e){var nm=$("nm").value.trim(),mb=$("mob").value,nok=nm.length>=2&&nm.length<=60,mok=/^[6-9]\d{9}$/.test(mb);$("nm").setAttribute("aria-invalid",!nok);$("mob").setAttribute("aria-invalid",!mok);$("er").textContent=nok&&mok?"Please send the form to WhatsApp to confirm your seat request.":"Please enter a valid name and 10-digit mobile number.";if(nok&&mok){link();window.open($("sw").href,"_blank");}}
 
 go(0);render();seats();
-var mins=25,left=1500,run=null;
-function paint(){var m=Math.floor(left/60),s=left%60;$("tm").textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s}
+var mins=25,left=1500,run=null,endAt=0,T0=document.title;
+function beep(){try{var C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.frequency.value=880;g.gain.value=.2;o.start();setTimeout(function(){o.stop();C.close()},900)}catch(e){}}
+function paint(){var m=Math.floor(left/60),s=left%60,t=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;$("tm").textContent=t;document.title=run?t+" | Focus - Sarthak Library":T0}
+function stop(){clearInterval(run);run=null;$("st").textContent="Start";paint()}
 paint();
-document.querySelectorAll(".modes button").forEach(function(b){b.onclick=function(){clearInterval(run);run=null;mins=+this.dataset.m;left=mins*60;paint();document.querySelectorAll(".modes button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});$("st").textContent="Start";}});
-$("st").onclick=function(){if(run){clearInterval(run);run=null;this.textContent="Start";return}if(left<=0)left=mins*60;this.textContent="Pause";run=setInterval(function(){left--;paint();if(left<=0){clearInterval(run);run=null;$("st").textContent="Start";}} ,1000)};
+document.querySelectorAll(".modes button").forEach(function(b){b.onclick=function(){stop();mins=+this.dataset.m;left=mins*60;paint();document.querySelectorAll(".modes button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")})}});
+$("st").onclick=function(){if(run){stop();return}if(left<=0)left=mins*60;endAt=Date.now()+left*1000;this.textContent="Pause";run=setInterval(function(){left=Math.max(0,Math.round((endAt-Date.now())/1000));paint();if(left<=0){stop();beep();$("hl")&&0;}},500);paint()};
+$("rs").onclick=function(){stop();left=mins*60;paint()};
 })();
 </script>
 <script>
 (function(){var d=document,$=function(i){return d.getElementById(i)},r=d.documentElement,ls=function(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 var tg=$("tg");function th(t){r.dataset.theme=t;ls("theme",t);if(tg)tg.setAttribute("aria-label",t=="dark"?"Switch to light mode":"Switch to dark mode")}th(r.dataset.theme||"light");tg&&(tg.onclick=function(){th(r.dataset.theme=="dark"?"light":"dark")});
 var mb=$("mb"),mm=$("mm");function cm(o){mm.hidden=!o;mb.setAttribute("aria-expanded",o);mb.setAttribute("aria-label",o?"Close menu":"Open menu")}mb.onclick=function(){cm(mm.hidden)};mm.addEventListener("click",function(){cm(false)});
-var bt=$("bt");addEventListener("scroll",function(){bt.classList.toggle("on",scrollY>600)},{passive:true});bt&& (bt.onclick=function(){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
+var bt=$("bt");addEventListener("scroll",function(){if(bt)bt.classList.toggle("on",scrollY>600)},{passive:true});bt&& (bt.onclick=function(){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
 var y=$("yr");if(y)y.textContent=new Date().getFullYear();
 d.querySelectorAll(".cp").forEach(function(b){b.onclick=function(){var t=b.dataset.copy,ok=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1600)};try{navigator.clipboard.writeText(t).then(ok).catch(function(){})}catch(e){}}});
 })();
