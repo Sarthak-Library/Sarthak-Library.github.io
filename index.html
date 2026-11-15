@@ -44,8 +44,8 @@ a{color:inherit;text-decoration:none}
 .btn.ghost{background:transparent;color:var(--navy);border-color:rgba(16,31,54,.35);box-shadow:none}
 .btn.ghost:hover{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
 .ofr{background:var(--navy);color:var(--on);overflow:hidden;font:500 11.5px/1 var(--ui);text-transform:uppercase;letter-spacing:.16em;border-bottom:1px solid rgba(247,245,239,.08)}
-.tr{display:flex;width:max-content;padding:11px 0;animation:mq 60s linear infinite}.tr span{white-space:nowrap;display:flex}.tr i{font-style:normal;padding-right:3.2em}
-.ofr:hover .tr{animation-play-state:paused}@keyframes mq{to{transform:translateX(-50%)}}
+.tr{display:flex;width:max-content;padding:11px 0;animation:mq 70s linear infinite;will-change:transform}.tr span{white-space:nowrap;display:flex}.tr i{font-style:normal;padding-right:3.2em}
+@keyframes mq{to{transform:translateX(-50%)}}
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);border-bottom:1px solid rgba(197,164,109,.3)}
 nav .w{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
 .logo{font:600 20px var(--serif);color:var(--ivory);display:flex;align-items:center;gap:11px;letter-spacing:.01em}
@@ -287,7 +287,7 @@ html[data-theme=dark] #app .due,html[data-theme=dark] #app{--due:#ff9f98}
 <body>
 <a class="skip" href="#main">Skip to content</a><div id="sp" aria-hidden="true"></div>
 <div id="site">
-<div class="ofr"><div class="tr"><span><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i></span></div></div>
+<div class="ofr"><div class="tr"><span><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i></span><span aria-hidden="true"><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i><i>★ Grand opening</i><i>First 20 students get ₹100 off</i><i>2 days free trial</i><i>Open 8 AM to 8 PM</i></span></div></div>
 <nav><div class="w">
 <a class="logo" href="#top"><i></i>Sarthak Library</a>
 <ul><li><a href="#facilities" data-i="nav1">Facilities</a></li><li><a href="#plans" data-i="nav2">Plans &amp; fees</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact" data-i="nav4">Contact</a></li></ul>
@@ -485,6 +485,42 @@ var mb=$("mb"),mm=$("mm");function cm(o){mm.hidden=!o;mb.setAttribute("aria-expa
 var bt=$("bt");addEventListener("scroll",function(){if(bt)bt.classList.toggle("on",scrollY>600)},{passive:true});bt&& (bt.onclick=function(){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
 var y=$("yr");if(y)y.textContent=new Date().getFullYear();
 d.querySelectorAll(".cp").forEach(function(b){b.onclick=function(){var t=b.dataset.copy,ok=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1600)};try{navigator.clipboard.writeText(t).then(ok).catch(function(){})}catch(e){}}});
+})();
+</script>
+<script>
+(function(){
+var U="https://bypixbchtdyimshlnbkn.supabase.co",K="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h";
+var $=function(i){return document.getElementById(i)},mem="",pw="",act=false,
+PL={"1":"Shift 1 (8:00 AM – 2:00 PM)","2":"Shift 2 (2:00 PM – 8:00 PM)","full":"Full day (8:00 AM – 8:00 PM)"};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function rpc(n,b){return fetch(U+"/rest/v1/rpc/"+n,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){if(!r.ok)throw new Error("net");return r.json()})}
+function say(t){$("p-sx").textContent=t||""}
+function route(){var on=location.hash==="#student";$("app").hidden=!on;$("site").hidden=on;if(on){if($("p-L").hidden&&!mem)$("p-L").hidden=false;paintLogin();window.scrollTo(0,0)}}
+function paintLogin(){$("p-le").textContent="Student portal";$("p-lt").textContent=act?"Activate your account":"Welcome back";
+$("p-lp").textContent=act?"Ask the library desk for your 8-digit activation code, then choose a password.":"See your seat, fees and receipts, and keep your details updated.";
+$("p-lh").textContent=act?"First-time activation":"Student login";$("p-sL").hidden=false;$("p-aL").hidden=true;
+$("p-spw").firstChild.nodeValue=act?"Choose a password (8+ characters)":"Password";
+var ic=$("p-icw");if(!ic){ic=document.createElement("label");ic.id="p-icw";ic.innerHTML='Activation code<input id="p-ic" inputmode="numeric" autocomplete="one-time-code" maxlength="8">';$("p-sm").parentNode.after(ic)}ic.hidden=!act;
+var a=$("p-lsw");a.textContent=act?"Already activated? Log in":"First time here? Activate your account";a.href="#student";a.onclick=function(e){e.preventDefault();act=!act;say("");paintLogin()}}
+function view(d){
+var paid=(d.payments||[]).reduce(function(s,p){return s+p.amount},0),due=Math.max(0,(d.total||0)-paid);
+$("p-L").hidden=true;var S=$("p-S");S.hidden=false;
+S.innerHTML='<div class="ah"><a class="lgo" href="#top"><i></i>Sarthak Library</a><button onclick="LP.out()">Logout</button></div>'+
+'<h2>Hello, '+esc(d.name)+'</h2><p>Member ID <strong>'+esc(d.member_id)+'</strong></p>'+
+'<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
+'<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
+'<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
+'<h3>Your details</h3><div class="c"><label>Father\'s name<input id="p-f" maxlength="80" value="'+esc(d.father_name)+'"></label><label>Address<textarea id="p-ad" maxlength="300" rows="3">'+esc(d.address)+'</textarea></label><label>Alternate mobile (10 digits)<input id="p-al" inputmode="numeric" maxlength="10" value="'+esc(d.alt_mobile)+'"></label><label>PIN code (6 digits)<input id="p-pn" inputmode="numeric" maxlength="6" value="'+esc(d.pin)+'"></label><button class="p full" onclick="LP.save()">Save details</button><small id="p-sv"></small></div>'}
+window.LP={
+sGo:function(){var m=$("p-sm").value.trim(),p=$("p-sp").value;if(!m||!p){say("Please enter your Member ID and password.");return}
+say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_pass:p}).then(function(d){if(!d){say("Member ID or password is wrong, or the account is locked for 15 minutes after 5 wrong tries.");return}mem=m;pw=p;say("");view(d)})};
+if(!act)return go().catch(function(){say("Could not connect. Please check your internet and try again.")});
+var c=$("p-ic").value.trim();rpc("student_activate",{p_member:m,p_code:c,p_pass:p}).then(function(r){if(r==="ok"){act=false;return go()}
+say(r==="weak"?"Password must be 8 to 72 characters.":r==="locked"?"Too many wrong tries. Please wait 15 minutes.":"Member ID or activation code is wrong, or this account is already active.")}).catch(function(){say("Could not connect. Please check your internet and try again.")})},
+save:function(){var o=$("p-sv");o.textContent="Saving…";rpc("student_save",{p_member:mem,p_pass:pw,p_father:$("p-f").value,p_address:$("p-ad").value,p_alt:$("p-al").value,p_pin:$("p-pn").value}).then(function(ok){o.textContent=ok?"Saved ✓":"Please check the details: mobile must be 10 digits and PIN 6 digits."}).catch(function(){o.textContent="Could not save. Check your internet."})},
+out:function(){mem=pw="";$("p-S").hidden=true;$("p-S").innerHTML="";$("p-sp").value="";$("p-L").hidden=false;location.hash="#top"},
+login:function(){location.href="/admin.html"},draw:function(){},form:function(){},csv:function(){},saveF:function(){}};
+window.addEventListener("hashchange",route);route();
 })();
 </script>
 </body>
