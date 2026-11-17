@@ -3,10 +3,11 @@ var pom=box.dataset.mode==="pomodoro",mins=+box.dataset.def||25,phase="focus",cy
 var P={focus:25,short:5,long:15};if(pom)left=P.focus*60;
 function fmt(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+":":"")+(h&&m<10?"0":"")+m+":"+(x<10?"0":"")+x}
 function paint(){$("tm").textContent=fmt(left);if(pom)$("ph").textContent=phase==="focus"?"Focus time · session "+(cycle%4+1)+" of 4":phase==="short"?"Short break":"Long break";d.title=run?fmt(left)+" | "+T0:T0}
-function beep(){try{var C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain();o.connect(g);g.connect(C.destination);o.frequency.value=880;g.gain.value=.25;o.start();setTimeout(function(){o.stop();C.close()},1000)}catch(e){}}
+var AC;function unlock(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume()}catch(e){}}
+function beep(){try{unlock();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=880;g.gain.value=.25;o.start();setTimeout(function(){o.stop()},1000)}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
 function stop(){clearInterval(run);run=null;$("go").textContent="Start";paint()}
 function setMins(m){stop();mins=m;left=m*60;paint();d.querySelectorAll("[data-m]").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.m===m?"true":"false")})}
-function start(){if(left<=0)left=mins*60;endAt=Date.now()+left*1000;$("go").textContent="Pause";run=setInterval(tick,250);paint()}
+function start(){unlock();if(left<=0)left=mins*60;endAt=Date.now()+left*1000;$("go").textContent="Pause";run=setInterval(tick,250);paint()}
 function tick(){left=Math.max(0,Math.round((endAt-Date.now())/1000));paint();if(left>0)return;beep();stop();
 if(pom){if(phase==="focus"){cycle++;phase=cycle%4===0?"long":"short";left=P[phase]*60}else{phase="focus";left=P.focus*60}paint();setTimeout(start,1200)}else $("ph").textContent="Time is up!"}
 $("go").onclick=function(){run?stop():start()};
