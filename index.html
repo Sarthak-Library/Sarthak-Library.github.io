@@ -40,8 +40,8 @@ a{color:inherit;text-decoration:none}::selection{background:rgba(184,146,74,.35)
 .btn:hover{opacity:.88}.btn:active{transform:scale(.98)}
 .btn.ghost{background:transparent;color:var(--fg);border-color:var(--line2)}.btn.ghost:hover{border-color:var(--fg);opacity:1}
 .btn.sm{min-height:40px;padding:0 18px;font-size:var(--fs-sm)}
-footer .btn.ghost{color:var(--on-deep);border-color:rgba(244,242,236,.6)}footer .btn.ghost:hover{border-color:var(--on-deep)}
-.btn.cp{margin-left:0;min-height:44px;padding:0 16px;font-size:var(--fs-sm)}footer p:has(.cp){display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+footer .fl-a{text-decoration:underline;text-decoration-color:rgba(244,242,236,.4);text-underline-offset:3px}footer .fl-a:hover{color:var(--on-deep);text-decoration-color:currentColor}
+
 .icon-btn{width:40px;height:40px;padding:0;border-radius:var(--r-pill);border:1px solid var(--line2);background:transparent;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:var(--fs-md)}
 .ld{pointer-events:none;opacity:.7}
 .ofr{background:var(--deep);color:var(--on-deep-mut);overflow:hidden;font:500 var(--fs-xs)/1 var(--ui)}
@@ -73,8 +73,7 @@ nav #mm{position:absolute;left:0;right:0;top:100%;z-index:25;background:var(--bg
 .focus .eb{margin:0}.tm{font:700 var(--fs-display)/1 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:-.05em}
 .modes{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:var(--r-pill)}.modes button{border:0;background:transparent;color:var(--mut);font:600 var(--fs-sm) var(--ui);padding:0 16px;min-height:36px;border-radius:var(--r-pill);cursor:pointer}.modes button[aria-pressed=true]{background:var(--ink);color:var(--on-ink)}
 .focus .btn{min-width:200px}.focus small{color:var(--mut);font-size:var(--fs-sm)}.focus a{text-decoration:underline;text-underline-offset:3px}
-@media(max-width:860px){.hero{padding:40px 0 56px}.hero .g{gap:36px}}
-#study-timer{padding:48px 0}#study-timer .w{display:flex;flex-direction:column;align-items:center;text-align:center}#study-timer h2{margin-bottom:20px}#study-timer .focus{width:100%;max-width:420px}
+@media(max-width:860px){.hero{padding:40px 0 56px}.hero .g{gap:36px}}@media(min-width:861px){.hero .g{grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:48px}}.hero .ht{display:flex;justify-content:center}.hero .ht .focus{width:100%;max-width:400px}
 .strip{border-block:1px solid var(--line)}.strip .w{display:flex;justify-content:center;gap:10px 36px;flex-wrap:wrap;padding:16px 24px;font:500 var(--fs-sm) var(--ui);color:var(--mut)}.strip span{display:flex;align-items:center;gap:8px}.strip .ic{width:18px;height:18px;color:var(--acc)}
 section{padding:96px 0}h2{font-size:var(--fs-h2);max-width:16em}
 .fac h2{margin-bottom:40px}
@@ -185,6 +184,7 @@ html[data-theme=dark] #nt{color:#F3F0E8!important;background:#2B2A22!important}
 <div class="live"><i></i><span id="hl">Opening offer: first 20 students only</span></div>
 <div class="stats"><div><b>50</b><span>Personal seats</span></div><div><b>100 Mbps</b><span>Wi-Fi</span></div><div><b>8am–8pm</b><span>Open daily</span></div></div>
 </div>
+<div class="ht"><div class="focus" role="group" aria-label="Focus session timer"><p class="eb">Free study timer</p><span class="tm" id="tm">25:00</span><div class="modes"><button type="button" aria-pressed="true" data-m="25">25m</button><button type="button" data-m="45">45m</button><button type="button" data-m="60">60m</button></div><button class="btn" id="st" type="button">Start</button><button class="btn ghost" id="rs" type="button">Reset</button><small>Quiet. Focus. Repeat.</small><a href="/pomodoro-timer.html" style="font-size:var(--fs-xs);color:var(--slate)">More free timers →</a></div></div>
 </div></header>
 
 <div class="strip"><div class="w">
@@ -194,9 +194,6 @@ html[data-theme=dark] #nt{color:#F3F0E8!important;background:#2B2A22!important}
 <span><svg class="ic" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4zM16 9l5 6M21 9l-5 6"/></svg>Strict silence</span>
 </div></div>
 
-<section id="study-timer"><div class="w"><p class="eb">Free tool</p><h2>Study timer</h2>
-<div class="focus" role="group" aria-label="Focus session timer"><p class="eb">Focus session</p><span class="tm" id="tm">25:00</span><div class="modes"><button type="button" aria-pressed="true" data-m="25">25m</button><button type="button" data-m="45">45m</button><button type="button" data-m="60">60m</button></div><button class="btn" id="st" type="button">Start</button><button class="btn ghost" id="rs" type="button">Reset</button><small>Quiet. Focus. Repeat.</small><a href="/pomodoro-timer.html" style="font-size:var(--fs-xs);color:var(--slate)">More free timers →</a></div>
-</div></section>
 
 <section class="fac" id="facilities"><div class="w">
 <p class="eb">Facilities</p>
@@ -269,8 +266,8 @@ html[data-theme=dark] #nt{color:#F3F0E8!important;background:#2B2A22!important}
 <footer id="site-footer"><div class="w fg4">
 <div><h3>Sarthak Library and Self Study Zone</h3><p>A calm, disciplined self-study space in Shahjahanpur for competitive exams, government jobs and college studies. Come with a goal. Study with dedication.</p></div>
 <div><h4>Quick links</h4><ul><li><a href="#facilities">Facilities</a></li><li><a href="#plans">Plans &amp; fees</a></li><li><a href="#booking">Reserve a seat</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul></div>
-<div><h4>Contact</h4><p><a href="tel:+919450860232">+91 94508 60232</a><button class="btn sm ghost cp" aria-live="polite" type="button" data-copy="+919450860232" aria-label="Copy phone number">Copy</button></p></div>
-<div><h4>Address</h4><p>355, Moh. Gangapuram Colony, Tilhar Zai, Near Malik Montessori School, Loharon Wala Chauraha, Shahjahanpur, Uttar Pradesh 242001 <button class="btn sm ghost cp" aria-live="polite" type="button" data-copy="355, Moh. Gangapuram Colony, Tilhar Zai, Near Malik Montessori School, Loharon Wala Chauraha, Shahjahanpur, Uttar Pradesh 242001" aria-label="Copy address">Copy</button></p></div>
+<div><h4>Contact</h4><p><a class="fl-a" href="tel:+919450860232" title="Call us">+91 94508 60232</a></p></div>
+<div><h4>Address</h4><p><a class="fl-a" href="https://www.google.com/maps/search/?api=1&amp;query=Sarthak+Library+Gangapuram+Colony+Tilhar+Zai+Shahjahanpur+242001" target="_blank" rel="noopener" title="Open in Google Maps">355, Moh. Gangapuram Colony, Tilhar Zai, Near Malik Montessori School, Loharon Wala Chauraha, Shahjahanpur, Uttar Pradesh 242001</a></p></div>
 </div><div class="w fl" role="navigation" aria-label="Related pages"><div><h4>Find a library by exam or facility</h4><ul><li><a href="/best-library-in-shahjahanpur.html">Best library in Shahjahanpur</a></li><li><a href="/best-library-near-me-shahjahanpur.html">Library near me</a></li><li><a href="/competitive-exam-library-shahjahanpur.html">Competitive exam library</a></li><li><a href="/ssc-exam-library-shahjahanpur.html">SSC exam library</a></li><li><a href="/banking-exam-library-shahjahanpur.html">Banking exam library</a></li><li><a href="/defence-exam-library-shahjahanpur.html">Defence exam library</a></li><li><a href="/study-hall-shahjahanpur.html">Study hall</a></li><li><a href="/ac-library-shahjahanpur.html">AC library</a></li></ul></div><div><h4>Free study tools</h4><ul><li><a href="/pomodoro-timer.html">Pomodoro Timer</a></li><li><a href="/online-timer.html">Online Timer</a></li><li><a href="/study-timer.html">Study Timer</a></li><li><a href="/25-minute-timer.html">25 Minute Timer</a></li><li><a href="/exam-timer-mock-test.html">Mock Test Timer</a></li></ul></div></div>
 <div class="w fb">© <span id="yr">2026</span> Sarthak Library and Self Study Zone. All rights reserved.<span class="lu">Last updated: <time datetime="2026-11-16">16 November 2026</time></span></div></footer>
 <button class="icon-btn fab" id="bt" type="button" aria-label="Back to top">↑</button>
