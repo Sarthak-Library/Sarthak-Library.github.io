@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://bypixbchtdyimshlnbkn.supabase.co; img-src data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<script>if(top!==self){try{top.location=self.location}catch(e){}document.documentElement.style.display="none"}</script><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Library Admin</title>
 <style>input,select,textarea{font-size:16px}:root{--bg:#fff;--ink:#2b2a26;--line:#e5e3dc;--ac:#44705b;--bad:#c0392b;color-scheme:light dark}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1d1b;--ink:#eee;--line:#3a3b38;--ac:#6fa88f}}
@@ -8,7 +11,7 @@ button{cursor:pointer}.p,.on{background:var(--ac);color:#fff;border-color:var(--
 .b,.t{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}small{opacity:.7}.due{color:var(--bad)}
 .s{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.s div{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
 dialog{max-width:480px;width:92%;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}dialog label{display:block;margin:6px 0;font-size:12px}dialog input,dialog select{width:100%;box-sizing:border-box;margin-top:2px}</style></head><body>
-<div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" placeholder="Email" style="width:100%;margin-bottom:8px;box-sizing:border-box"><input id="w" type="password" placeholder="Password" style="width:100%;margin-bottom:8px;box-sizing:border-box"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
+<div id="L" style="max-width:320px;margin:60px auto"><h2>Admin login</h2><input id="e" type="email" autocomplete="username" placeholder="Email" style="width:100%;margin-bottom:8px;box-sizing:border-box"><input id="w" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;margin-bottom:8px;box-sizing:border-box"><button class="p" onclick="login()">Login</button> <small id="m"></small></div>
 <div id="A" hidden><h2 style="margin:0 0 4px">Sarthak Library</h2><div id="bk"></div><div class="s" id="st"></div>
 <input id="q" placeholder="Search name, mobile, member ID, seat..." style="width:100%;box-sizing:border-box" oninput="draw()">
 <div class="t" id="tabs"></div><div class="t"><button class="p" onclick="form()">+ Add student</button><button onclick="csv()">Backup (CSV)</button><button onclick="out()">Logout</button></div><div id="o"></div></div>
@@ -21,14 +24,16 @@ var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1
 var P={"1":"Shift 1 (8-2)","2":"Shift 2 (2-8)","full":"Full day"},PR={"1":400,"2":400,"full":700},DS={1:1,3:.9,6:.85};
 var F=[["name","Student name"],["mobile","Mobile (10 digits)"],["seat","Seat (1-50, blank = none)"],["start_date","Start date","date"],["total","Total fee ₹","number"],["extra","Deposit / joining fee ₹ (optional)","number"],["notes","Notes (optional)"]];
 function api(p,o){o=o||{};o.headers={apikey:SK,Authorization:"Bearer "+(tok||SK),"Content-Type":"application/json",Prefer:"return=minimal"};return fetch(SB+p,o)}
-function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function sid(x){return String(x==null?"":x).replace(/[^\w-]/g,"")}
+function dg(x){return String(x==null?"":x).replace(/\D/g,"")}
 function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Error: "+(d.msg||d.error_description||d.message||JSON.stringify(d))}).catch(function(e){$("m").textContent="Network error: "+e.message})}
 $("w").addEventListener("keydown",function(e){if(e.key=="Enter")login()});
 function out(){sessionStorage.clear();location.reload()}
 function load(){api("/rest/v1/bookings?select=*,payments(*)&order=created_at.desc").then(function(r){if(r.status==401){out();return}return r.json()}).then(function(d){if(!d)return;$("L").hidden=true;$("A").hidden=false;if(!Array.isArray(d)){$("o").innerHTML='<p class="due"><b>Database error:</b> '+esc(d.message||JSON.stringify(d))+"</p>";return}rows=d;draw()})}
 function td(){var d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
-function paid(r){return(r.payments||[]).reduce(function(a,p){return a+p.amount},0)}
-function due(r){return(r.total||0)+(r.extra||0)-paid(r)}
+function paid(r){return(r.payments||[]).reduce(function(a,p){return a+(Number(p.amount)||0)},0)}
+function due(r){return(Number(r.total)||0)+(Number(r.extra)||0)-paid(r)}
 function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z"),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+r.months);d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate()));return d.toISOString().slice(0,10)}
 function dl(r){return r.start_date?Math.ceil((new Date(endD(r))-new Date(td()))/864e5):999}
 function exp(r){if(r.status!="approved"||!r.start_date)return"";var d=dl(r);return d<0?' <b class="due">EXPIRED</b>':d<=7?' <b class="due">(expires in '+d+' days)</b>':""}
@@ -37,9 +42,9 @@ function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:k=="
 function draw(){backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 $("st").innerHTML="<div><b>"+ap.length+"</b><br><small>Students</small></div><div><b>₹"+col+"</b><br><small>Collected</small></div><div class='due'><b>₹"+dd+"</b><br><small>Due</small></div>";
 $("tabs").innerHTML=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["due","Fees due"],["exp","Expiring"],["all","All"]].map(function(t){return'<button class="'+(t[0]==f?"on":"")+'" onclick="f=\''+t[0]+'\';draw()">'+t[1]+" ("+rows.filter(function(r){return vis(r,t[0])}).length+")</button>"}).join("");
-$("o").innerHTML=rows.filter(function(r){return vis(r,f)&&match(r)}).map(function(r){var d=due(r),i="'"+r.id+"'",ok=r.status=="approved";
-var pl=(r.payments||[]).slice().sort(function(a,b){return a.paid_on<b.paid_on?-1:1}).map(function(p){return"₹"+p.amount+" ("+p.paid_on+') <a href="#" onclick="dp(\''+p.id+'\');return false">✕</a>'}).join(" · ");
-return'<div class="c"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.name)+"</b>"+(ok?"":r.status=="waiting"?" <small>waiting list</small>":" <small>new request</small>")+' · <a href="tel:'+r.mobile+'">'+r.mobile+"</a><br>"+P[r.plan_key]+" · "+r.months+" mo · Seat "+(r.seat||"-")+" · "+(r.start_date||"-")+" → "+endD(r)+exp(r)+(r.exam?'<br><small>'+esc(r.exam)+"</small>":"")+"<br>Total ₹"+(r.total||0)+(r.extra?" + ₹"+r.extra+" deposit/joining":"")+" · Paid ₹"+paid(r)+" · <b"+(d>0?' class="due"':"")+">Due ₹"+d+"</b>"+(pl?"<br><small>Payments: "+pl+"</small>":"")+(r.notes?"<br><small>"+esc(r.notes)+"</small>":"")+
+$("o").innerHTML=rows.filter(function(r){return vis(r,f)&&match(r)}).map(function(r){var d=due(r),i="'"+sid(r.id)+"'",ok=r.status=="approved";
+var pl=(r.payments||[]).slice().sort(function(a,b){return a.paid_on<b.paid_on?-1:1}).map(function(p){return"₹"+esc(p.amount)+" ("+esc(p.paid_on)+') <a href="#" onclick="dp(\''+sid(p.id)+'\');return false">✕</a>'}).join(" · ");
+return'<div class="c"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.name)+"</b>"+(ok?"":r.status=="waiting"?" <small>waiting list</small>":" <small>new request</small>")+' · <a href="tel:'+esc(dg(r.mobile))+'">'+esc(r.mobile)+"</a><br>"+esc(P[r.plan_key]||r.plan_key)+" · "+esc(r.months)+" mo · Seat "+esc(r.seat||"-")+" · "+esc(r.start_date||"-")+" → "+esc(endD(r))+exp(r)+(r.exam?'<br><small>'+esc(r.exam)+"</small>":"")+"<br>Total ₹"+esc(r.total||0)+(r.extra?" + ₹"+esc(r.extra)+" deposit/joining":"")+" · Paid ₹"+paid(r)+" · <b"+(d>0?' class="due"':"")+">Due ₹"+d+"</b>"+(pl?"<br><small>Payments: "+pl+"</small>":"")+(r.notes?"<br><small>"+esc(r.notes)+"</small>":"")+
 '<div class="b">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+',{status:\'waiting\'})">Waitlist</button>'))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="form('+i+')">Edit</button><button onclick="del('+i+')">Delete</button></div></div>'}).join("")||"<p>Nothing here.</p>"}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
 function up(id,b){var r=rows.find(function(x){return x.id==id});if(b.status=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
@@ -53,13 +58,13 @@ if(!confirm("Create a new student-login code for "+s.name+"?\nThis also resets t
 fetch(SB+"/rest/v1/rpc/admin_make_invite",{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({p_id:id})}).then(function(x){return x.json()}).then(function(c){
 if(typeof c!=="string"||!/^[0-9]{8}$/.test(c)){alert("Could not create the code. Please log in again and retry.");return}
 var t="Hello "+s.name+", activate your Sarthak Library student login.\nMember ID: "+s.member_id+"\nActivation code: "+c+"\nOpen: https://sarthak-library.github.io/#student\nChoose 'First time here?' and set your own password.";
-window.open("https://wa.me/91"+s.mobile+"?text="+encodeURIComponent(t),"_blank")}).catch(function(){alert("Network problem. Please try again.")})}
+window.open("https://wa.me/91"+dg(s.mobile)+"?text="+encodeURIComponent(t),"_blank")}).catch(function(){alert("Network problem. Please try again.")})}
 function wa(id){var r=rows.find(function(x){return x.id==id}),t="Hello "+r.name+", this is Sarthak Library. ";
 if(r.status=="approved"){if(dl(r)<=7)t+="Your membership ("+(r.member_id||"")+") "+(dl(r)<0?"expired on ":"expires on ")+endD(r)+". Please renew to keep your seat."+(due(r)>0?" Pending fee: ₹"+due(r)+".":"");
 else t+="Your seat is CONFIRMED.\nMember ID: "+r.member_id+"\nPlan: "+P[r.plan_key]+", "+r.months+" month(s)\nSeat: "+(r.seat||"to be assigned")+"\nStarts: "+(r.start_date||"-")+"\nFee ₹"+r.total+" | Paid ₹"+paid(r)+" | Due ₹"+due(r)+(FORM_URL?"\nPlease fill in your registration form: "+FORM_URL:"")+(CHANNEL_URL?"\nFor library notices, join our WhatsApp channel: "+CHANNEL_URL:"")}
 else if(r.status=="waiting")t+="You are on our waiting list. We will message you as soon as a seat is free.";
 else t+="We received your seat request. We will confirm it shortly.";
-window.open("https://wa.me/91"+r.mobile+"?text="+encodeURIComponent(t),"_blank")}
+window.open("https://wa.me/91"+dg(r.mobile)+"?text="+encodeURIComponent(t),"_blank")}
 function form(id){var r=id?rows.find(function(x){return x.id==id}):{status:"approved",plan_key:"1",months:1};D.dataset.id=id||"";$("dt").textContent=id?"Edit student":"Add student";$("de").textContent="";
 function sel(k,o,l){return"<label>"+l+'<select id="f_'+k+'">'+o.map(function(x){return'<option value="'+x[0]+'">'+x[1]+"</option>"}).join("")+"</select></label>"}
 $("df").innerHTML=F.map(function(x){return'<label>'+x[1]+'<input id="f_'+x[0]+'" type="'+(x[2]||"text")+'"></label>'}).join("")+sel("plan_key",[["1","Shift 1"],["2","Shift 2"],["full","Full day"]],"Plan")+sel("months",[[1,"1 month"],[3,"3 months"],[6,"6 months"]],"Duration")+sel("status",[["pending","New request"],["waiting","Waiting list"],["approved","Confirmed student"]],"Status");
@@ -69,7 +74,8 @@ function calc(){return Math.round(PR[$("f_plan_key").value]*$("f_months").value*
 function saveF(){var b={};F.forEach(function(x){b[x[0]]=$("f_"+x[0]).value.trim()||null});["plan_key","status"].forEach(function(k){b[k]=$("f_"+k).value});b.months=+$("f_months").value;b.seat=b.seat?+b.seat:null;b.total=+b.total||0;b.extra=+b.extra||0;
 if(!b.name||!/^\d{10}$/.test(b.mobile||"")){$("de").textContent="Name and a 10-digit mobile are required.";return}if(b.seat&&(b.seat<1||b.seat>50)){$("de").textContent="Seat must be 1-50.";return}
 var id=D.dataset.id;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{method:"POST",body:JSON.stringify(b)}).then(chk)}
-function csv(){var h=["member_id","name","mobile","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r)});return h.map(function(k){return'"'+String(r[k]==null?"":r[k]).replace(/"/g,'""')+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
+function cell(v){var s=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(s)&&!/^-?\d+(\.\d+)?$/.test(s))s="'"+s;return s.replace(/"/g,'""')}
+function csv(){var h=["member_id","name","mobile","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r)});return h.map(function(k){return'"'+cell(r[k])+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
 function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;$("bk").innerHTML=d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Press Backup (CSV) and save the file to your hard disk.</div>":""}
 if(tok)load();
 </script></body></html>

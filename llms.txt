@@ -1,0 +1,42 @@
+# Sarthak Library and Self Study Zone
+
+> A quiet self-study library in Shahjahanpur, Uttar Pradesh, India, with 50 personal seats, 100 Mbps Wi-Fi, RO drinking water, CCTV and a strict silence rule. Open every day, 8:00 AM to 8:00 PM. Students preparing for UPSC / State PCS, SSC, Defence (NDA, CDS, Agniveer), Police, Banking and college exams study here. Monthly plans start at ₹400.
+
+## Key facts
+- Name: Sarthak Library and Self Study Zone (also called Sarthak Library)
+- Address: 355, Moh. Gangapuram Colony, Tilhar Zai, Near Malik Montessori School, Loharon Wala Chauraha, Shahjahanpur, Uttar Pradesh 242001, India
+- Phone / WhatsApp: +91 94508 60232
+- Opening hours: every day, 8:00 AM to 8:00 PM
+- Type of place: self-study library. Members study independently with their own material.
+- Seats: 50 personal seats. The library assigns a seat when a booking is confirmed.
+- Shifts: Shift 1 is 8:00 AM to 2:00 PM, Shift 2 is 2:00 PM to 8:00 PM, Full day shift is 8:00 AM to 8:00 PM.
+- Fees with the opening offer (first 20 students, ₹100 off): Shift 1 or Shift 2 ₹400 per month (regular ₹500); Full day shift ₹700 per month (regular ₹800).
+- Longer plans: 3 months saves 10%, 6 months saves 15%.
+- Free trial: 2 days for new students.
+- Facilities: 100 Mbps Wi-Fi, RO-purified drinking water, CCTV surveillance, silent study environment, individual study desks.
+- Library rules: phone on silent and calls outside, speak softly, sit only on your own seat and in your own shift, keep desk and floor clean, no loud music or group study.
+- How to reserve: use the booking form on the home page (choose plan and start date, enter name and mobile), which opens a ready-to-send WhatsApp message; the team then calls to confirm and invites you for a visit. Walk-ins are welcome any day.
+- Members can log in to the student portal on the home page (https://sarthak-library.github.io/#student) with their Member ID to see their seat, fees and payments.
+- Offers and prices can change. Confirm current fees, availability and trial terms by phone before visiting.
+
+## Main pages
+- [Home: plans, fees, booking, FAQ, contact](https://sarthak-library.github.io/): Full details, booking form and frequently asked questions.
+- [Best Library in Shahjahanpur](https://sarthak-library.github.io/best-library-in-shahjahanpur.html): Looking for a quiet self-study library in Shahjahanpur? Explore personal seating, 100 Mbps Wi-Fi, RO water and CCTV at Sarthak Library.
+- [Self-Study Library Near Me in Shahjahanpur](https://sarthak-library.github.io/best-library-near-me-shahjahanpur.html): Searching for a library near you in Shahjahanpur? Find Sarthak Library in Gangapuram Colony, Tilhar Zai, with personal seats and daily study hours.
+- [Study Hall in Shahjahanpur](https://sarthak-library.github.io/study-hall-shahjahanpur.html): Looking for a study hall in Shahjahanpur? Explore a quiet self-study space with personal seating, Wi-Fi, RO water and daily shifts.
+- [Competitive Exam Study Library in Shahjahanpur](https://sarthak-library.github.io/competitive-exam-library-shahjahanpur.html): A self-study space in Shahjahanpur for competitive exam preparation, with personal seating, Wi-Fi, RO water and daily study shifts.
+- [SSC Exam Self-Study Library in Shahjahanpur](https://sarthak-library.github.io/ssc-exam-library-shahjahanpur.html): Preparing for SSC CGL, CHSL or MTS? Study at your own pace at Sarthak Library, Shahjahanpur, with personal seats, 100 Mbps Wi-Fi, RO water and CCTV.
+- [Banking Exam Self-Study Library in Shahjahanpur](https://sarthak-library.github.io/banking-exam-library-shahjahanpur.html): Prepare for IBPS, SBI and other banking exams at Sarthak Library, a quiet self-study space in Shahjahanpur with personal seats, fast Wi-Fi and CCTV.
+- [Defence Exam Self-Study Library in Shahjahanpur](https://sarthak-library.github.io/defence-exam-library-shahjahanpur.html): A quiet self-study space in Shahjahanpur for NDA, CDS, Agniveer and other defence exam aspirants. Personal seats, fast Wi-Fi, RO water and CCTV security.
+- [AC Library in Shahjahanpur](https://sarthak-library.github.io/ac-library-shahjahanpur.html): Looking for an AC library in Shahjahanpur? Explore the air-conditioned study environment, personal seating and student facilities at Sarthak Library.
+
+## Free study tools
+- [Study Timer Online for Students](https://sarthak-library.github.io/study-timer.html): Free study timer for students and exam aspirants. Choose 25, 45, 60 or 90 minute focus blocks, add a custom time, and study without distractions.
+- [25 Minute Timer Online](https://sarthak-library.github.io/25-minute-timer.html): Free 25 minute timer online with alarm. Perfect for Pomodoro study sessions. Also set 5, 10 or 15 minutes. Start, pause and reset instantly.
+- [Pomodoro Timer Online: Free 25/5 Study Timer](https://sarthak-library.github.io/pomodoro-timer.html): Free online Pomodoro timer for students: 25 minutes focus, 5 minute break, long break after 4 sessions. Works on phone and laptop, no sign-up.
+- [Online Timer: Free Countdown Timer with Alarm](https://sarthak-library.github.io/online-timer.html): Free online timer and countdown timer. Set any time from 1 to 600 minutes, start, pause and reset. Alarm sound at the end. Works on mobile.
+- [Mock Test Timer Online for UPSC, SSC, Banking Exams](https://sarthak-library.github.io/exam-timer-mock-test.html): Free exam timer for mock tests and timed practice: 30, 60, 120 or 180 minutes or custom. Practise time management for UPSC, SSC, banking and defence exams.
+
+## Optional
+- [Google Maps location](https://www.google.com/maps/search/?api=1&query=Sarthak+Library+Gangapuram+Colony+Tilhar+Zai+Shahjahanpur+242001)
+- [Sitemap](https://sarthak-library.github.io/sitemap.xml)
