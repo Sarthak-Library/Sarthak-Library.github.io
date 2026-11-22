@@ -15,12 +15,17 @@
 - Free trial: 2 days for new students.
 - Facilities: 100 Mbps Wi-Fi, RO-purified drinking water, CCTV surveillance, silent study environment, individual study desks.
 - Library rules: phone on silent and calls outside, speak softly, sit only on your own seat and in your own shift, keep desk and floor clean, no loud music or group study.
-- How to reserve: use the booking form on the home page (choose plan and start date, enter name and mobile), which opens a ready-to-send WhatsApp message; the team then calls to confirm and invites you for a visit. Walk-ins are welcome any day.
+- How to reserve: use the booking form on the Plans & fees page, https://sarthak-library.github.io/plans.html#booking (choose plan and start date, enter name and mobile), which opens a ready-to-send WhatsApp message; the team then calls to confirm and invites you for a visit. Walk-ins are welcome any day.
 - Members can log in to the student portal on the home page (https://sarthak-library.github.io/#student) with their Member ID to see their seat, fees and payments.
 - Offers and prices can change. Confirm current fees, availability and trial terms by phone before visiting.
 
 ## Main pages
-- [Home: plans, fees, booking, FAQ, contact](https://sarthak-library.github.io/): Full details, booking form and frequently asked questions.
+- [Home](https://sarthak-library.github.io/): Overview, quick answers, free study timer and student portal.
+- [About](https://sarthak-library.github.io/about.html): Who the library is for, what members get, rules and opening hours.
+- [Plans & fees](https://sarthak-library.github.io/plans.html): Shift prices, longer-plan savings and the seat booking form.
+- [FAQ](https://sarthak-library.github.io/faq.html): Fees, timings, free trial, seats and concessions.
+- [Facilities](https://sarthak-library.github.io/facilities.html): Seating, Wi-Fi, RO water, CCTV and silence rules.
+- [Contact](https://sarthak-library.github.io/contact.html): Address, phone and directions.
 - [Best Library in Shahjahanpur](https://sarthak-library.github.io/best-library-in-shahjahanpur.html): Looking for a quiet self-study library in Shahjahanpur? Explore personal seating, 100 Mbps Wi-Fi, RO water and CCTV at Sarthak Library.
 - [Self-Study Library Near Me in Shahjahanpur](https://sarthak-library.github.io/best-library-near-me-shahjahanpur.html): Searching for a library near you in Shahjahanpur? Find Sarthak Library in Gangapuram Colony, Tilhar Zai, with personal seats and daily study hours.
 - [Study Hall in Shahjahanpur](https://sarthak-library.github.io/study-hall-shahjahanpur.html): Looking for a study hall in Shahjahanpur? Explore a quiet self-study space with personal seating, Wi-Fi, RO water and daily shifts.
