@@ -21,9 +21,16 @@ var d0=new Date(),iso=new Date(Date.now()-d0.getTimezoneOffset()*6e4).toISOStrin
 var panes=document.querySelectorAll(".pane"),dots=document.querySelectorAll(".sp span");
 function go(n){step=n;panes.forEach(function(x,i){x.classList.toggle("on",i==n)});dots.forEach(function(x,i){x.classList.toggle("on",i<=n)});$("bb").style.visibility=n?"visible":"hidden";$("nx").style.display=n<1?"inline-flex":"none";$("sw").style.display=n===1?"inline-flex":"none";if(n===1){link();$("pn").textContent=$("nm").value||"Your name";$("ps").textContent=plans[sel][0]}if(n>0)document.querySelector(".sp").scrollIntoView({block:"start"})}
 $("nx").onclick=function(){go(step+1)};$("bb").onclick=function(){go(step-1)};
+/* save the request so it shows up as "pending" in the admin panel (WhatsApp still opens as before) */
+var SBU="https://bypixbchtdyimshlnbkn.supabase.co",SBK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",lastSent="";
+function saveReq(nm,mb){
+var body={p_name:nm,p_mobile:mb,p_exam:$("pf").value,p_plan:KEYS[sel],p_months:dur,p_seat:null,p_start:$("sd").value||null,p_trial:!!$("tr").checked,p_ref:($("rf").value||"").trim()||null,p_total:Math.round(total())};
+var sig=JSON.stringify(body);if(sig===lastSent)return;/* same request pressed twice: save once */
+try{fetch(SBU+"/rest/v1/rpc/submit_booking",{method:"POST",keepalive:true,headers:{apikey:SBK,"Content-Type":"application/json"},body:sig}).then(function(r){if(r.ok)lastSent=sig}).catch(function(){})}catch(x){}
+}
 $("sw").onclick=function(e){e.preventDefault();var nm=$("nm").value.trim(),mb=$("mob").value,nok=nm.length>=2&&nm.length<=60,mok=/^[6-9]\d{9}$/.test(mb);$("nm").setAttribute("aria-invalid",!nok);$("mob").setAttribute("aria-invalid",!mok);
 if(!nok||!mok){$("er").textContent="Please enter your name and a valid 10-digit mobile number.";(!nok?$("nm"):$("mob")).focus();return}
-$("er").textContent="Opening WhatsApp. Just press send there and we will confirm your seat.";link();var u=$("sw").href,w=window.open(u,"_blank");if(w)w.opener=null;else location.href=u};
+$("er").textContent="Opening WhatsApp. Just press send there and we will confirm your seat.";link();saveReq(nm,mb);var u=$("sw").href,w=window.open(u,"_blank");if(w)w.opener=null;else location.href=u};
 
 go(0);render();
 })();
