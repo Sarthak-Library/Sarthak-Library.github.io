@@ -67,7 +67,7 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 <div id="L" class="login"><div class="lc"><div class="lg"><i></i></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
 <div id="A" class="app" hidden>
 <aside class="sb"><div class="br"><i></i>Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button onclick="csv()">⬇ Backup</button><button onclick="out()">Logout</button></div></aside>
-<main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat..." oninput="draw()"><button class="p" onclick="form()">+ Add student</button></header>
+<main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
 <script>
@@ -109,7 +109,7 @@ return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.na
 '<td data-l="Period"><span>'+esc(r.start_date||"-")+'<span class="sub">to '+esc(endD(r))+"</span></span></td>"+
 '<td data-l="Fees"><span><b>'+m(r.total||0)+"</b>"+(r.extra?' <small>+ '+m(r.extra)+" deposit</small>":"")+'<span class="sub">Paid '+m(paid(r))+' · <b class="'+(d>0?"due":"")+'">Due '+m(d)+"</b></span>"+(pl?'<span class="sub">'+pl+"</span>":"")+"</span></td>"+
 '<td data-l="Status">'+bs+"</td>"+
-'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="form('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
 function up(id,b){var r=rows.find(function(x){return x.id==id});if(b.status=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}
@@ -129,7 +129,7 @@ else t+="Your seat is CONFIRMED.\nMember ID: "+r.member_id+"\nPlan: "+P[r.plan_k
 else if(r.status=="waiting")t+="You are on our waiting list. We will message you as soon as a seat is free.";
 else t+="We received your seat request. We will confirm it shortly.";
 window.open("https://wa.me/91"+dg(r.mobile)+"?text="+encodeURIComponent(t),"_blank")}
-function form(id){var r=id?rows.find(function(x){return x.id==id}):{status:"approved",plan_key:"1",months:1};D.dataset.id=id||"";$("dt").textContent=id?"Edit student":"Add student";$("de").textContent="";
+function openForm(id){var r=id?rows.find(function(x){return x.id==id}):{status:"approved",plan_key:"1",months:1};D.dataset.id=id||"";$("dt").textContent=id?"Edit student":"Add student";$("de").textContent="";
 function sel(k,o,l){return"<label>"+l+'<select id="f_'+k+'">'+o.map(function(x){return'<option value="'+x[0]+'">'+x[1]+"</option>"}).join("")+"</select></label>"}
 $("df").innerHTML=F.map(function(x){return'<label>'+x[1]+'<input id="f_'+x[0]+'" type="'+(x[2]||"text")+'"></label>'}).join("")+sel("plan_key",[["1","Shift 1"],["2","Shift 2"],["full","Full day"]],"Plan")+sel("months",[[1,"1 month"],[3,"3 months"],[6,"6 months"]],"Duration")+sel("status",[["pending","New request"],["waiting","Waiting list"],["approved","Confirmed student"]],"Status");
 F.concat([["plan_key"],["months"],["status"]]).forEach(function(x){$("f_"+x[0]).value=r[x[0]]==null?"":r[x[0]]});
