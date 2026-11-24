@@ -63,15 +63,16 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
  .ac button{flex:1 1 auto}
 }
 @media(max-width:420px){.s{gap:10px}.sc{padding:12px}.sc b{font-size:21px}}
+.sn{display:inline-grid;place-items:center;min-width:38px;height:38px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-weight:800;font-size:15px}.fr{color:var(--mut);font-style:italic}hr.sh{border:0;border-top:1px dashed var(--line);margin:8px 0}
 </style></head><body>
 <div id="L" class="login"><div class="lc"><div class="lg"><i></i></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
 <div id="A" class="app" hidden>
 <aside class="sb"><div class="br"><i></i>Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
-<main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
+<main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat no..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
 <script>
-var FORM_URL="https://forms.gle/Den5ttpCaKE7umdX6";
+var FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSfMWdSF65AY7P9y2wJwvNgvtTruaQQekIJatcvc5TYqv0mjwg/viewform";
 var JOIN_FEE=0;       /* one-time joining fee / deposit added when you Confirm a student, e.g. 100 */
 var CHANNEL_URL="";   /* paste your WhatsApp Channel link here (optional) */
 var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",tok=sessionStorage.t,rows=[],f="pending",$=function(i){return document.getElementById(i)},D=$("D");
@@ -103,10 +104,11 @@ var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.
 function draw(){backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
-var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["upd","Student details"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
-$("tabs").innerHTML=T.map(function(t){return'<button class="nv'+(t[0]==f?" on":"")+'" onclick="f=\''+t[0]+'\';draw()"><span>'+t[1]+'</span><i>'+(t[0]=="upd"&&rows.some(nw)?rows.filter(nw).length+" new":rows.filter(function(r){return vis(r,t[0])}).length)+'</i></button>'}).join("");
+var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["seats","Seat chart"],["upd","Student details"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
+$("tabs").innerHTML=T.map(function(t){return'<button class="nv'+(t[0]==f?" on":"")+'" onclick="f=\''+t[0]+'\';draw()"><span>'+t[1]+'</span><i>'+(t[0]=="upd"&&rows.some(nw)?rows.filter(nw).length+" new":(t[0]=="seats"?seatedN():rows.filter(function(r){return vis(r,t[0])}).length))+'</i></button>'}).join("");
 T.forEach(function(t){if(t[0]==f)$("pt").textContent=t[1]});
 var L=rows.filter(function(r){return vis(r,f)&&match(r)});if(f=="upd")L.sort(function(a,b){return(Date.parse(upd(b))||0)-(Date.parse(upd(a))||0)});
+if(f=="seats"){$("o").innerHTML=seatChart();return}
 if(!L.length){$("o").innerHTML='<div class="em"><b>Nothing here</b><br>No records match this view.</div>';return}
 $("o").innerHTML='<table><thead><tr><th>Student</th><th>Plan &amp; seat</th><th>Period</th><th>Fees</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+L.map(function(r){var d=due(r),i="'"+sid(r.id)+"'",ok=r.status=="approved",ex=ok&&r.start_date?dl(r):999;
 var pl=(r.payments||[]).slice().sort(function(a,b){return a.paid_on<b.paid_on?-1:1}).map(function(p){return"₹"+esc(p.amount)+" ("+esc(p.paid_on)+') <a href="#" onclick="dp(\''+sid(p.id)+'\');return false" title="Remove payment">✕</a>'}).join(" · ");
@@ -119,7 +121,38 @@ return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.na
 '<td data-l="Period"><span>'+esc(r.start_date||"-")+'<span class="sub">to '+esc(endD(r))+"</span></span></td>"+
 '<td data-l="Fees"><span><b>'+m(r.total||0)+"</b>"+(r.extra?' <small>+ '+m(r.extra)+" deposit</small>":"")+'<span class="sub">Paid '+m(paid(r))+' · <b class="'+(d>0?"due":"")+'">Due '+m(d)+"</b></span>"+(pl?'<span class="sub">'+pl+"</span>":"")+"</span></td>"+
 '<td data-l="Status">'+bs+"</td>"+
-'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button onclick="allot('+i+')">Allot seat</button><button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+
+/* ===== Seat chart: every seat 1-50 with the student sitting in it ===== */
+var SEATS=50;
+function seatOf(k,sh){/* active students on seat k for shift sh ("1","2") - full-day students cover both shifts */
+ return rows.filter(function(r){return r.status=="approved"&&+r.seat==k&&(r.plan_key=="full"||r.plan_key==sh)})}
+function seatedN(){var n={};rows.forEach(function(r){if(r.status=="approved"&&r.seat)n[r.seat]=1});return Object.keys(n).length}
+function who(r){return'<b>'+esc(r.name)+'</b>'+(r.plan_key=="full"?' <span class="bd in">Full day</span>':'')+'<span class="sub">'+(r.member_id?esc(r.member_id)+' · ':'')+'<a href="tel:'+esc(dg(r.mobile))+'">'+esc(r.mobile)+'</a>'+(dl(r)<0?' · <b class="due">Expired</b>':dl(r)<=7?' · <b class="due">Expires '+dl(r)+'d</b>':'')+'</span>'}
+function seatChart(){
+ var q=$("q").value.toLowerCase(),free1=0,free2=0,h="";
+ for(var k=1;k<=SEATS;k++){
+  var a=seatOf(k,"1"),b=seatOf(k,"2");if(!a.length)free1++;if(!b.length)free2++;
+  var all=a.concat(b.filter(function(x){return a.indexOf(x)<0}));
+  if(q&&String(k).indexOf(q)<0&&!all.some(function(r){return match(r)}))continue;
+  var cl=function(l,empty){return l.length?l.map(who).join('<hr class="sh">'):'<span class="fr">'+empty+'</span>'};
+  h+='<tr><td data-l="Seat"><span class="sn">'+k+'</span></td><td data-l="Shift 1 (8-2)">'+cl(a,'Free')+'</td><td data-l="Shift 2 (2-8)">'+cl(b,'Free')+'</td><td class="at"><div class="ac">'+
+   (all.length?'':'<button class="p" onclick="pick('+k+')">Allot student</button>')+
+   (all.length&&(!a.length||!b.length)?'<button onclick="pick('+k+')">Allot to free shift</button>':'')+
+   all.map(function(r){return'<button class="x" onclick="unseat(\''+sid(r.id)+'\')">Free '+esc(r.name.split(" ")[0])+'</button>'}).join("")+'</div></td></tr>'}
+ var w=rows.filter(function(r){return r.status=="approved"&&!r.seat});
+ return'<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info);border-radius:0;margin:0;border-width:0 0 1px">Shift 1: <b>'+free1+'</b> seats free · Shift 2: <b>'+free2+'</b> seats free'+(w.length?' · <b>'+w.length+'</b> confirmed student'+(w.length>1?'s':'')+' without a seat: '+w.map(function(r){return esc(r.name)}).join(", "):'')+'</div>'+
+ (h?'<table><thead><tr><th>Seat</th><th>Shift 1 (8 AM – 2 PM)</th><th>Shift 2 (2 PM – 8 PM)</th><th>Actions</th></tr></thead><tbody>'+h+'</tbody></table>':'<div class="em"><b>No seat matches</b></div>')}
+/* allot from a student row: ask for a seat number */
+function allot(id){var r=rows.find(function(x){return x.id==id});if(!r)return;var s=prompt("Seat number for "+r.name+" (1-"+SEATS+")",r.seat||"");if(s===null)return;s=+s;if(!s||s<1||s>SEATS||s%1){alert("Enter a seat number from 1 to "+SEATS+".");return}up(id,{seat:s,status:"approved"})}
+/* allot from a seat row: choose from confirmed students who have no seat (or pending/waiting ones) */
+function pick(k){
+ var c=rows.filter(function(r){return(r.status!="approved"||!r.seat)}).sort(function(a,b){return(a.status=="approved"?0:1)-(b.status=="approved"?0:1)});
+ if(!c.length){alert("Every student already has a seat. Add or confirm a student first.");return}
+ var m="Allot seat "+k+" to which student? Type the number:\n\n"+c.map(function(r,i){return(i+1)+". "+r.name+" ("+(P[r.plan_key]||r.plan_key)+(r.status=="approved"?"":", "+r.status)+")"}).join("\n");
+ var n=prompt(m);if(n===null)return;var r=c[(+n)-1];if(!r){alert("Please type a number from the list.");return}
+ up(r.id,{seat:k,status:"approved"})}
+function unseat(id){var r=rows.find(function(x){return x.id==id});if(r&&confirm("Remove "+r.name+" from seat "+r.seat+"?"))up(id,{seat:null})}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
 function up(id,b){var r=rows.find(function(x){return x.id==id});if(b.status=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}

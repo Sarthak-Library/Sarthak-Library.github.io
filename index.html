@@ -101,7 +101,7 @@ try{navigator.modelContext.registerTool({name:"open_booking_form",description:"O
 </script>
 <script src="/site.js" defer></script><script src="/home-timer.js" defer></script><script>
 (function(){
-var U="https://bypixbchtdyimshlnbkn.supabase.co",K="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h";
+var FORM="https://docs.google.com/forms/d/e/1FAIpQLSfMWdSF65AY7P9y2wJwvNgvtTruaQQekIJatcvc5TYqv0mjwg/viewform",U="https://bypixbchtdyimshlnbkn.supabase.co",K="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h";
 var $=function(i){return document.getElementById(i)},mem="",pw="",act=false,
 PL={"1":"Shift 1 (8:00 AM – 2:00 PM)","2":"Shift 2 (2:00 PM – 8:00 PM)","full":"Full day (8:00 AM – 8:00 PM)"};
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -127,7 +127,7 @@ S.innerHTML='<div class="ah"><a class="lgo" href="#top"><i></i>Sarthak Library</
 '<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
 '<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
 '<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
-'<h3>Your details</h3><div class="c"><label>Father\'s name<input id="p-f" maxlength="80" value="'+esc(d.father_name)+'"></label><label>Address<textarea id="p-ad" maxlength="300" rows="3">'+esc(d.address)+'</textarea></label><label>Alternate mobile (10 digits)<input id="p-al" inputmode="numeric" maxlength="10" value="'+esc(d.alt_mobile)+'"></label><label>PIN code (6 digits)<input id="p-pn" inputmode="numeric" maxlength="6" value="'+esc(d.pin)+'"></label><button class="p full" onclick="LP.save()">Save details</button><small id="p-sv"></small></div>'+AAD(d)}
+'<h3>Your details</h3><div class="c">Your registration details (father\'s name, address, alternate mobile, PIN) are collected through the library\'s registration form. '+(FORM?'<a href="'+FORM+'" target="_blank" rel="noopener">Fill or update the registration form</a>':"")+'</div>'+AAD(d)}
 window.LP={
 sGo:function(){var m=$("p-sm").value.trim(),p=$("p-sp").value;if(!m||!p){say("Please enter your Member ID and password.");return}
 say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_pass:p}).then(function(d){if(!d){say("Member ID or password is wrong, or the account is locked for 15 minutes after 5 wrong tries.");return}mem=m;pw=p;say("");view(d)})};
