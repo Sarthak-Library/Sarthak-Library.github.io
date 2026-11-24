@@ -114,6 +114,11 @@ $("p-lh").textContent=act?"First-time activation":"Student login";$("p-sL").hidd
 $("p-spw").firstChild.nodeValue=act?"Choose a password (8+ characters)":"Password";
 var ic=$("p-icw");if(!ic){ic=document.createElement("label");ic.id="p-icw";ic.innerHTML='Activation code<input id="p-ic" inputmode="numeric" autocomplete="one-time-code" maxlength="8">';$("p-sm").parentNode.after(ic)}ic.hidden=!act;
 var a=$("p-lsw");a.textContent=act?"Already activated? Log in":"First time here? Activate your account";a.href="#student";a.onclick=function(e){e.preventDefault();act=!act;say("");paintLogin()}}
+function fdate(x){try{return new Date(x).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}catch(e){return""}}
+function AAD(d){return'<h3>Aadhaar (PDF)</h3><div class="c"><p id="p-as">'+(d.aadhaar_uploaded_at?"Uploaded on <strong>"+esc(fdate(d.aadhaar_uploaded_at))+"</strong>. You can upload again to replace it.":"Not uploaded yet.")+'</p>'+
+'<label>Aadhaar copy as PDF (max 2 MB)<input id="p-af" type="file" accept="application/pdf,.pdf"></label>'+
+'<label style="display:flex;gap:8px;align-items:flex-start"><input id="p-ac" type="checkbox" style="width:auto;margin-top:4px"><span>I agree that Sarthak Library may keep my Aadhaar copy privately, only for identity verification of my membership.</span></label>'+
+'<button class="p full" onclick="LP.up()">Upload Aadhaar PDF</button><small id="p-au" role="status" aria-live="polite"></small></div>'}
 function view(d){
 var paid=(d.payments||[]).reduce(function(s,p){return s+(Number(p.amount)||0)},0),due=Math.max(0,(Number(d.total)||0)-paid);
 $("p-L").hidden=true;var S=$("p-S");S.hidden=false;
@@ -122,7 +127,7 @@ S.innerHTML='<div class="ah"><a class="lgo" href="#top"><i></i>Sarthak Library</
 '<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
 '<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
 '<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
-'<h3>Your details</h3><div class="c"><label>Father\'s name<input id="p-f" maxlength="80" value="'+esc(d.father_name)+'"></label><label>Address<textarea id="p-ad" maxlength="300" rows="3">'+esc(d.address)+'</textarea></label><label>Alternate mobile (10 digits)<input id="p-al" inputmode="numeric" maxlength="10" value="'+esc(d.alt_mobile)+'"></label><label>PIN code (6 digits)<input id="p-pn" inputmode="numeric" maxlength="6" value="'+esc(d.pin)+'"></label><button class="p full" onclick="LP.save()">Save details</button><small id="p-sv"></small></div>'}
+'<h3>Your details</h3><div class="c"><label>Father\'s name<input id="p-f" maxlength="80" value="'+esc(d.father_name)+'"></label><label>Address<textarea id="p-ad" maxlength="300" rows="3">'+esc(d.address)+'</textarea></label><label>Alternate mobile (10 digits)<input id="p-al" inputmode="numeric" maxlength="10" value="'+esc(d.alt_mobile)+'"></label><label>PIN code (6 digits)<input id="p-pn" inputmode="numeric" maxlength="6" value="'+esc(d.pin)+'"></label><button class="p full" onclick="LP.save()">Save details</button><small id="p-sv"></small></div>'+AAD(d)}
 window.LP={
 sGo:function(){var m=$("p-sm").value.trim(),p=$("p-sp").value;if(!m||!p){say("Please enter your Member ID and password.");return}
 say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_pass:p}).then(function(d){if(!d){say("Member ID or password is wrong, or the account is locked for 15 minutes after 5 wrong tries.");return}mem=m;pw=p;say("");view(d)})};
@@ -130,6 +135,15 @@ if(!act)return go().catch(function(){say("Could not connect. Please check your i
 var c=$("p-ic").value.trim();rpc("student_activate",{p_member:m,p_code:c,p_pass:p}).then(function(r){if(r==="ok"){act=false;return go()}
 say(r==="weak"?"Password must be 8 to 72 characters.":r==="locked"?"Too many wrong tries. Please wait 15 minutes.":"Member ID or activation code is wrong, or this account is already active.")}).catch(function(){say("Could not connect. Please check your internet and try again.")})},
 save:function(){var o=$("p-sv");o.textContent="Saving…";rpc("student_save",{p_member:mem,p_pass:pw,p_father:$("p-f").value,p_address:$("p-ad").value,p_alt:$("p-al").value,p_pin:$("p-pn").value}).then(function(ok){o.textContent=ok?"Saved ✓":"Please check the details: mobile must be 10 digits and PIN 6 digits."}).catch(function(){o.textContent="Could not save. Check your internet."})},
+up:function(){var o=$("p-au"),f=$("p-af").files[0];
+if(!f){o.textContent="Please choose your Aadhaar PDF first.";return}
+if(!/\.pdf$/i.test(f.name)||(f.type&&f.type!=="application/pdf")){o.textContent="Only a PDF file is accepted.";return}
+if(f.size>2097152){o.textContent="The file is larger than 2 MB. Please compress it and try again.";return}
+if(!$("p-ac").checked){o.textContent="Please tick the consent box to continue.";return}
+var fd=new FormData();fd.append("member",mem);fd.append("password",pw);fd.append("file",f);o.textContent="Uploading…";
+fetch(U+"/functions/v1/aadhaar-upload",{method:"POST",headers:{apikey:K},body:fd}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){return{s:r.status,j:j}})}).then(function(x){
+if(x.s===200&&x.j.ok){o.textContent="Uploaded ✓";$("p-af").value="";$("p-ac").checked=false;$("p-as").innerHTML="Uploaded on <strong>"+esc(fdate(x.j.uploaded_at))+"</strong>. You can upload again to replace it.";return}
+var e=x.j&&x.j.error;o.textContent=e==="login"?"Your login could not be verified. Please log in again.":e==="too_large"?"The file is larger than 2 MB.":e==="not_pdf"?"This does not look like a valid PDF.":e==="unsafe_pdf"?"This PDF contains active content and was rejected. Please upload a plain scan or the PDF downloaded from UIDAI.":"Could not upload right now. Please try again."}).catch(function(){o.textContent="Could not upload. Check your internet."})},
 out:function(){mem=pw="";$("p-S").hidden=true;$("p-S").innerHTML="";$("p-sp").value="";$("p-L").hidden=false;location.hash="#top"}
 };
 $("p-sL").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();LP.sGo()}});

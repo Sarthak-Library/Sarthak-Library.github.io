@@ -3,15 +3,18 @@ var NUM="919450860232",$=function(i){return document.getElementById(i)};
 var plans=[["Shift 1","8:00 AM – 2:00 PM",400,500],["Shift 2","2:00 PM – 8:00 PM",400,500],["Full day shift","8:00 AM – 8:00 PM",700,800]],KEYS=["1","2","full"];
 var sel=0,dur=1;
 function fmt(n){return"₹"+Math.round(n).toLocaleString("en-IN")}
-function total(){var d={1:1,3:.9,6:.85}[dur];return plans[sel][2]*dur*d}
+var DISC={1:1,3:.9,6:.85};
+function sync(){var p=+$("pl").value,u=+$("du").value;sel=(p>=0&&p<plans.length)?p:0;dur=DISC[u]?u:1}
+function total(){var d=DISC[dur]||1;return plans[sel][2]*dur*d}
 function render(){
+sync();
 $("pg").innerHTML=plans.map(function(p,i){return'<div class="pc'+(i==sel?" on":"")+'" data-i="'+i+'"><div class="t"><h3>'+p[0]+"</h3>"+'<span class="bd">Save ₹100 · first 20</span>'+'</div><div class="h">'+p[1]+'</div><div class="pr">'+fmt(p[2])+'<small>/ month</small></div><div class="old">Regular '+fmt(p[3])+'</div><div class="s">'+["Best for morning prep","Best for evening study","Best for a full day of prep"][i]+'</div><button class="btn'+(i==sel?"":" ghost")+'" type="button" aria-pressed="'+(i==sel)+'" aria-label="'+(i==sel?"Selected: ":"Choose ")+p[0]+' plan">'+(i==sel?"Selected ✓":"Choose plan")+'</button></div>'}).join("");
-if(!$("pl").options.length)$("pl").innerHTML=plans.map(function(p,i){return"<option value="+i+">"+p[0]+" · "+fmt(p[2])+"</option>"}).join("");$("pl").value=sel;
+if(!$("pl").options.length)$("pl").innerHTML=plans.map(function(p,i){return"<option value="+i+">"+p[0]+" · "+fmt(p[2])+"</option>"}).join("");$("pl").value=sel;$("du").value=dur;
 $("tl").textContent="Total for "+dur+(dur==1?" month":" months");$("tv").textContent=fmt(total());var q=plans[sel],sv=(q[3]||q[2])*dur-total();$("sv").textContent=sv>0?"You save "+fmt(sv)+" compared with regular fees.":"";}
 function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mob").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+"\nDuration: "+dur+" month(s)\nStart date: "+($("sd").value||"-")+"\nFree trial: "+($("tr").checked?"Yes":"No")+"\nEstimated fee: "+fmt(total())+"\nReferrer: "+($("rf").value||"-");$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t);var v=$("sd").value;$("psn").textContent=v?v.split("-").reverse().join("-"):"-"}
-$("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){sel=+c.dataset.i;render();$("pl").value=sel;if(e.target.closest("button"))$("booking").scrollIntoView()}};
-$("pl").onchange=function(){sel=+this.value;render();};
-$("du").onchange=function(){dur=+this.value;render();};
+$("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){$("pl").value=+c.dataset.i;render();if(e.target.closest("button"))$("booking").scrollIntoView()}};
+["pl","du"].forEach(function(i){["change","input","click","keyup"].forEach(function(ev){$(i).addEventListener(ev,function(){var a=sel,b=dur;sync();if(a!==sel||b!==dur)render()})})});
+addEventListener("pageshow",function(){render();link()});
 ["nm","mob","pf","rf","sd","tr"].forEach(function(i){if($(i))$(i).addEventListener("input",link);if($(i))$(i).addEventListener("change",link)});
 $("mob").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"")});
 $("nm").addEventListener("input",function(){$("pn").textContent=this.value||"Your name"});

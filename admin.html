@@ -91,31 +91,50 @@ function due(r){return(Number(r.total)||0)+(Number(r.extra)||0)-paid(r)}
 function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z"),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+r.months);d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate()));return d.toISOString().slice(0,10)}
 function dl(r){return r.start_date?Math.ceil((new Date(endD(r))-new Date(td()))/864e5):999}
 function exp(r){if(r.status!="approved"||!r.start_date)return"";var d=dl(r);return d<0?' <b class="due">EXPIRED</b>':d<=7?' <b class="due">(expires in '+d+' days)</b>':""}
-function match(r){var q=$("q").value.toLowerCase();return!q||[r.member_id,r.name,r.mobile,r.seat,r.exam].join(" ").toLowerCase().indexOf(q)>-1}
-function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:k=="exp"?r.status=="approved"&&dl(r)<=7:r.status==k)}
+function match(r){var q=$("q").value.toLowerCase();return!q||[r.member_id,r.name,r.mobile,r.seat,r.exam,r.father_name,r.alt_mobile,r.pin].join(" ").toLowerCase().indexOf(q)>-1}
+function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:k=="exp"?r.status=="approved"&&dl(r)<=7:k=="upd"?!!(r.details_updated_at||r.aadhaar_path):r.status==k)}
+/* student-submitted details + Aadhaar: helpers */
+function upd(r){return r.details_updated_at||r.aadhaar_uploaded_at||""}
+function seenT(){try{return+localStorage.lbSeen||0}catch(e){return 0}}
+function nw(r){var u=Date.parse(upd(r));return!!u&&u>seenT()}
+function seenAll(){var m=seenT();rows.forEach(function(r){var u=Date.parse(upd(r));if(u>m)m=u});try{localStorage.lbSeen=m}catch(e){}draw()}
+function fdt(s){try{return new Date(s).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return String(s||"")}}
+var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/;
 function draw(){backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
-var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
-$("tabs").innerHTML=T.map(function(t){return'<button class="nv'+(t[0]==f?" on":"")+'" onclick="f=\''+t[0]+'\';draw()"><span>'+t[1]+'</span><i>'+rows.filter(function(r){return vis(r,t[0])}).length+'</i></button>'}).join("");
+var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["upd","Student details"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
+$("tabs").innerHTML=T.map(function(t){return'<button class="nv'+(t[0]==f?" on":"")+'" onclick="f=\''+t[0]+'\';draw()"><span>'+t[1]+'</span><i>'+(t[0]=="upd"&&rows.some(nw)?rows.filter(nw).length+" new":rows.filter(function(r){return vis(r,t[0])}).length)+'</i></button>'}).join("");
 T.forEach(function(t){if(t[0]==f)$("pt").textContent=t[1]});
-var L=rows.filter(function(r){return vis(r,f)&&match(r)});
+var L=rows.filter(function(r){return vis(r,f)&&match(r)});if(f=="upd")L.sort(function(a,b){return(Date.parse(upd(b))||0)-(Date.parse(upd(a))||0)});
 if(!L.length){$("o").innerHTML='<div class="em"><b>Nothing here</b><br>No records match this view.</div>';return}
 $("o").innerHTML='<table><thead><tr><th>Student</th><th>Plan &amp; seat</th><th>Period</th><th>Fees</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+L.map(function(r){var d=due(r),i="'"+sid(r.id)+"'",ok=r.status=="approved",ex=ok&&r.start_date?dl(r):999;
 var pl=(r.payments||[]).slice().sort(function(a,b){return a.paid_on<b.paid_on?-1:1}).map(function(p){return"₹"+esc(p.amount)+" ("+esc(p.paid_on)+') <a href="#" onclick="dp(\''+sid(p.id)+'\');return false" title="Remove payment">✕</a>'}).join(" · ");
 var bs=!ok?(r.status=="waiting"?'<span class="bd in">Waiting</span>':'<span class="bd wn">New request</span>'):ex<0?'<span class="bd no">Expired</span>':ex<=7?'<span class="bd wn">Expires in '+ex+'d</span>':'<span class="bd ok">Active</span>';
-return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.name)+'</b><span class="sub"><a href="tel:'+esc(dg(r.mobile))+'">'+esc(r.mobile)+"</a>"+(r.exam?" · "+esc(r.exam):"")+"</span>"+(r.notes?'<span class="sub">'+esc(r.notes)+"</span>":"")+'</td>'+
+return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.name)+'</b><span class="sub"><a href="tel:'+esc(dg(r.mobile))+'">'+esc(r.mobile)+"</a>"+(r.exam?" · "+esc(r.exam):"")+"</span>"+(r.notes?'<span class="sub">'+esc(r.notes)+"</span>":"")+
+((r.father_name||r.address||r.alt_mobile||r.pin)?'<span class="sub">Father: '+esc(r.father_name||"-")+" · Alt mobile: "+esc(r.alt_mobile||"-")+'</span><span class="sub">Address: '+esc(r.address||"-")+(r.pin?" – "+esc(r.pin):"")+"</span>":"")+
+(upd(r)?'<span class="sub">Student updated: '+esc(fdt(upd(r)))+(nw(r)?' <b class="bd in">NEW</b>':"")+"</span>":"")+
+(ok?'<span class="sub">Aadhaar PDF: '+(r.aadhaar_path?"uploaded "+esc(fdt(r.aadhaar_uploaded_at)):"not uploaded yet")+"</span>":"")+'</td>'+
 '<td data-l="Plan"><span>'+esc(P[r.plan_key]||r.plan_key)+'<span class="sub">'+esc(r.months)+" mo · Seat "+esc(r.seat||"-")+'</span></span></td>'+
 '<td data-l="Period"><span>'+esc(r.start_date||"-")+'<span class="sub">to '+esc(endD(r))+"</span></span></td>"+
 '<td data-l="Fees"><span><b>'+m(r.total||0)+"</b>"+(r.extra?' <small>+ '+m(r.extra)+" deposit</small>":"")+'<span class="sub">Paid '+m(paid(r))+' · <b class="'+(d>0?"due":"")+'">Due '+m(d)+"</b></span>"+(pl?'<span class="sub">'+pl+"</span>":"")+"</span></td>"+
 '<td data-l="Status">'+bs+"</td>"+
-'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
 function up(id,b){var r=rows.find(function(x){return x.id==id});if(b.status=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}
 function pay(id){var a=prompt("Amount received (₹)");if(!a||!+a)return;api("/rest/v1/payments",{method:"POST",body:JSON.stringify({booking_id:id,amount:Math.round(+a),paid_on:td()})}).then(chk)}
 function dp(id){if(confirm("Remove this payment entry?"))api("/rest/v1/payments?id=eq."+id,{method:"DELETE"}).then(chk)}
-function del(id){if(confirm("Delete this student and their payments permanently?"))api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(chk)}
+function del(id){var r=rows.find(function(x){return x.id==id});if(!confirm("Delete this student and their payments permanently?"))return;
+var go=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(chk)};
+if(r&&AP.test(r.aadhaar_path||""))api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(go,go);else go()}
+function aad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;var w=window.open("about:blank","_blank");if(w)w.opener=null;
+fetch(SB+"/storage/v1/object/sign/aadhaar/"+r.aadhaar_path,{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:120})}).then(function(x){return x.json()}).then(function(d){
+if(!d||typeof d.signedURL!=="string"||d.signedURL.indexOf("/object/sign/aadhaar/")!==0){if(w)w.close();alert("Could not open the Aadhaar file. Please log in again and retry.");return}
+var u=SB+"/storage/v1"+d.signedURL;if(w)w.location.href=u;else location.href=u}).catch(function(){if(w)w.close();alert("Network problem. Please try again.")})}
+function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
+api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(function(x){if(!x.ok&&x.status!==404){x.text().then(alert);return}
+return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(chk)})}
 function renew(id){var r=rows.find(function(x){return x.id==id}),m=prompt("Renew for how many months? (1, 3 or 6)","1");if(!DS[m])return;var e=endD(r),st=(e!="-"&&e>td())?e:td(),pr=Math.round(PR[r.plan_key]*m*DS[m]);if(!confirm("Renew "+m+" month(s) from "+st+"?\nNew fee ₹"+pr+" (added to any existing due)"))return;up(id,{months:+m,start_date:st,total:(r.total||0)+pr})}
 function inv(id){var s=rows.find(function(x){return x.id==id});if(!s||!s.member_id)return;
 if(!confirm("Create a new student-login code for "+s.name+"?\nThis also resets their password if they had one."))return;
@@ -139,7 +158,11 @@ function saveF(){var b={};F.forEach(function(x){b[x[0]]=$("f_"+x[0]).value.trim(
 if(!b.name||!/^\d{10}$/.test(b.mobile||"")){$("de").textContent="Name and a 10-digit mobile are required.";return}if(b.seat&&(b.seat<1||b.seat>50)){$("de").textContent="Seat must be 1-50.";return}
 var id=D.dataset.id;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{method:"POST",body:JSON.stringify(b)}).then(chk)}
 function cell(v){var s=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(s)&&!/^-?\d+(\.\d+)?$/.test(s))s="'"+s;return s.replace(/"/g,'""')}
-function csv(){var h=["member_id","name","mobile","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r)});return h.map(function(k){return'"'+cell(r[k])+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
-function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;$("bk").innerHTML=d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Select Backup to download your data.</div>":""}
+function csv(){var h=["member_id","name","mobile","father_name","alt_mobile","address","pin","aadhaar_uploaded","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r),aadhaar_uploaded:r.aadhaar_path?"yes":"no"});return h.map(function(k){return'"'+cell(r[k])+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
+function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;var nn=rows.filter(nw).length,ub=nn?'<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">'+nn+(nn==1?" student has":" students have")+' updated their details or Aadhaar. <button onclick="f=\'upd\';draw()">View</button> <button onclick="seenAll()">Mark as seen</button></div>':"";
+$("bk").innerHTML=ub+(d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Select Backup to download your data.</div>":"")}
 if(tok)load();
+/* auto-refresh: pick up student updates every 30 s while this page is open and visible */
+setInterval(function(){if(tok&&!document.hidden&&!D.open&&!$("A").hidden)load()},30000);
+document.addEventListener("visibilitychange",function(){if(tok&&!document.hidden&&!D.open&&!$("A").hidden)load()});
 </script></body></html>
