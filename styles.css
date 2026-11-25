@@ -176,3 +176,5 @@ body.lock{overflow:hidden}
 .kh{margin:28px 0 12px;font-size:var(--fs-xl)}.kf{display:grid;grid-template-columns:max-content 1fr;gap:8px 24px;margin:0;font-size:var(--fs-sm)}.kf dt{font-weight:700}.kf dd{margin:0;color:var(--mut)}.kf a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:560px){.kf{grid-template-columns:1fr;gap:2px}.kf dd{margin-bottom:10px}}
 @media(max-width:560px){.pt2{min-width:0;font-size:13px}.pt2 caption{padding:12px 10px}.pt2 th,.pt2 td{padding:10px 8px}.pt2 thead th:nth-child(5),.pt2 tbody td:nth-child(5){display:none}}
+
+#app .rm{border-color:var(--err);background:rgba(192,57,43,.08)}#app .dcl{border:1px solid var(--line);border-radius:var(--r-md,10px);padding:10px 12px;margin:10px 0}#app .dcl legend{font-weight:700;padding:0 6px}#app button:disabled{opacity:.5;cursor:not-allowed}

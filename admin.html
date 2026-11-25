@@ -73,6 +73,8 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
 <script>
 var FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSfMWdSF65AY7P9y2wJwvNgvtTruaQQekIJatcvc5TYqv0mjwg/viewform";
+var REMIND_DAYS=5;   /* remind students whose plan ends within this many days (or already ended) */
+var OFFER_SEATS=20;  /* opening-offer seats (also set in the Supabase offer_status function) */
 var JOIN_FEE=0;       /* one-time joining fee / deposit added when you Confirm a student, e.g. 100 */
 var CHANNEL_URL="";   /* paste your WhatsApp Channel link here (optional) */
 var SB="https://bypixbchtdyimshlnbkn.supabase.co",SK="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h",tok=sessionStorage.t,rows=[],f="pending",$=function(i){return document.getElementById(i)},D=$("D");
@@ -93,7 +95,7 @@ function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:
 function dl(r){return r.start_date?Math.ceil((new Date(endD(r))-new Date(td()))/864e5):999}
 function exp(r){if(r.status!="approved"||!r.start_date)return"";var d=dl(r);return d<0?' <b class="due">EXPIRED</b>':d<=7?' <b class="due">(expires in '+d+' days)</b>':""}
 function match(r){var q=$("q").value.toLowerCase();return!q||[r.member_id,r.name,r.mobile,r.seat,r.exam,r.father_name,r.alt_mobile,r.pin].join(" ").toLowerCase().indexOf(q)>-1}
-function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:k=="exp"?r.status=="approved"&&dl(r)<=7:k=="upd"?!!(r.details_updated_at||r.aadhaar_path):r.status==k)}
+function vis(r,k){return k=="all"||(k=="due"?r.status=="approved"&&due(r)>0:k=="exp"?r.status=="approved"&&dl(r)<=7:k=="rem"?r.status=="approved"&&(due(r)>0||dl(r)<=REMIND_DAYS):k=="upd"?!!(r.details_updated_at||r.aadhaar_path):r.status==k)}
 /* student-submitted details + Aadhaar: helpers */
 function upd(r){return r.details_updated_at||r.aadhaar_uploaded_at||""}
 function seenT(){try{return+localStorage.lbSeen||0}catch(e){return 0}}
@@ -101,10 +103,10 @@ function nw(r){var u=Date.parse(upd(r));return!!u&&u>seenT()}
 function seenAll(){var m=seenT();rows.forEach(function(r){var u=Date.parse(upd(r));if(u>m)m=u});try{localStorage.lbSeen=m}catch(e){}draw()}
 function fdt(s){try{return new Date(s).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return String(s||"")}}
 var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/;
-function draw(){backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
+function draw(){var RM=remMap();backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
-var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["seats","Seat chart"],["upd","Student details"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
+var T=[["pending","New requests"],["waiting","Waiting list"],["approved","Students"],["seats","Seat chart"],["upd","Student details"],["rem","Fee reminders"],["due","Fees due"],["exp","Expiring"],["all","All records"]];
 $("tabs").innerHTML=T.map(function(t){return'<button class="nv'+(t[0]==f?" on":"")+'" onclick="f=\''+t[0]+'\';draw()"><span>'+t[1]+'</span><i>'+(t[0]=="upd"&&rows.some(nw)?rows.filter(nw).length+" new":(t[0]=="seats"?seatedN():rows.filter(function(r){return vis(r,t[0])}).length))+'</i></button>'}).join("");
 T.forEach(function(t){if(t[0]==f)$("pt").textContent=t[1]});
 var L=rows.filter(function(r){return vis(r,f)&&match(r)});if(f=="upd")L.sort(function(a,b){return(Date.parse(upd(b))||0)-(Date.parse(upd(a))||0)});
@@ -120,8 +122,8 @@ return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.na
 '<td data-l="Plan"><span>'+esc(P[r.plan_key]||r.plan_key)+'<span class="sub">'+esc(r.months)+" mo · Seat "+esc(r.seat||"-")+'</span></span></td>'+
 '<td data-l="Period"><span>'+esc(r.start_date||"-")+'<span class="sub">to '+esc(endD(r))+"</span></span></td>"+
 '<td data-l="Fees"><span><b>'+m(r.total||0)+"</b>"+(r.extra?' <small>+ '+m(r.extra)+" deposit</small>":"")+'<span class="sub">Paid '+m(paid(r))+' · <b class="'+(d>0?"due":"")+'">Due '+m(d)+"</b></span>"+(pl?'<span class="sub">'+pl+"</span>":"")+"</span></td>"+
-'<td data-l="Status">'+bs+"</td>"+
-'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button onclick="allot('+i+')">Allot seat</button><button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+'<td data-l="Status">'+bs+(ok&&RM[r.id]?'<span class="sub">Reminder opened '+esc(RM[r.id])+"</span>":"")+"</td>"+
+'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button onclick="allot('+i+')">Allot seat</button><button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button'+(d>0||ex<=REMIND_DAYS?' class="p"':"")+' onclick="remind('+i+')">Fee reminder</button><button onclick="sms('+i+')">SMS</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
 
 /* ===== Seat chart: every seat 1-50 with the student sitting in it ===== */
 var SEATS=50;
@@ -153,6 +155,17 @@ function pick(k){
  var n=prompt(m);if(n===null)return;var r=c[(+n)-1];if(!r){alert("Please type a number from the list.");return}
  up(r.id,{seat:k,status:"approved"})}
 function unseat(id){var r=rows.find(function(x){return x.id==id});if(r&&confirm("Remove "+r.name+" from seat "+r.seat+"?"))up(id,{seat:null})}
+
+/* ===== Fee reminders: WhatsApp (and SMS as a fallback) with the message already written ===== */
+function remMap(){try{return JSON.parse(localStorage.lbRem||"{}")}catch(e){return{}}}
+function remMark(id){var m=remMap();m[id]=td();try{localStorage.lbRem=JSON.stringify(m)}catch(e){}}
+function remText(r){var d=due(r),n=dl(r),e=endD(r),t="Hello "+r.name+", this is Sarthak Library. Fee reminder: ";
+ if(e!="-")t+="your "+(P[r.plan_key]||"")+" plan ("+(r.member_id||"")+") "+(n<0?"ended on ":"ends on ")+e+(n>=0&&n<=REMIND_DAYS?" ("+(n==0?"today":n+" day"+(n>1?"s":"")+" left")+")":"")+".";
+ else t+="your membership ("+(r.member_id||"")+") fee needs attention.";
+ if(d>0)t+=" Pending fee: ₹"+d+".";
+ return t+" Please pay at the library desk or reply here to renew and keep your seat"+(r.seat?" no. "+r.seat:"")+". Thank you."}
+function remind(id){var r=rows.find(function(x){return x.id==id});if(!r)return;remMark(id);window.open("https://wa.me/91"+dg(r.mobile)+"?text="+encodeURIComponent(remText(r)),"_blank");draw()}
+function sms(id){var r=rows.find(function(x){return x.id==id});if(!r)return;remMark(id);location.href="sms:+91"+dg(r.mobile)+"?&body="+encodeURIComponent(remText(r))}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
 function up(id,b){var r=rows.find(function(x){return x.id==id});if(b.status=="approved"&&r.seat&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==r.seat&&(x.plan_key=="full"||r.plan_key=="full"||x.plan_key==r.plan_key)})&&!confirm("Seat "+r.seat+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}
@@ -193,7 +206,11 @@ var id=D.dataset.id;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{metho
 function cell(v){var s=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(s)&&!/^-?\d+(\.\d+)?$/.test(s))s="'"+s;return s.replace(/"/g,'""')}
 function csv(){var h=["member_id","name","mobile","father_name","alt_mobile","address","pin","aadhaar_uploaded","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r),aadhaar_uploaded:r.aadhaar_path?"yes":"no"});return h.map(function(k){return'"'+cell(r[k])+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
 function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;var nn=rows.filter(nw).length,ub=nn?'<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">'+nn+(nn==1?" student has":" students have")+' updated their details or Aadhaar. <button onclick="f=\'upd\';draw()">View</button> <button onclick="seenAll()">Mark as seen</button></div>':"";
-$("bk").innerHTML=ub+(d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Select Backup to download your data.</div>":"")}
+var rm=remMap(),nr=rows.filter(function(r){return vis(r,"rem")&&rm[r.id]!=td()}).length,filled=rows.filter(function(r){return r.status=="approved"}).length;
+document.title=(nr?"("+nr+") ":"")+"Library Admin";
+var rb=nr?'<div class="c">'+nr+(nr==1?" student needs":" students need")+' a fee reminder today (plan ending soon, ended, or fees pending). <button onclick="f=\'rem\';draw()">Open reminders</button></div>':"",
+ob='<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">Opening offer: <b>'+filled+'</b> of '+OFFER_SEATS+' seats filled · <b>'+Math.max(0,OFFER_SEATS-filled)+'</b> left</div>';
+$("bk").innerHTML=rb+ob+ub+(d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Select Backup to download your data.</div>":"")}
 if(tok)load();
 /* auto-refresh: pick up student updates every 30 s while this page is open and visible */
 setInterval(function(){if(tok&&!document.hidden&&!D.open&&!$("A").hidden)load()},30000);

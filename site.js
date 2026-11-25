@@ -11,4 +11,5 @@ var lB=$("lgB"),lP=$("lgP");if(lB){lB.onclick=function(e){e.stopPropagation();va
 var bt=$("bt");addEventListener("scroll",function(){if(bt)bt.classList.toggle("on",scrollY>600)},{passive:true});if(bt)bt.onclick=function(){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})};
 var y=$("yr");if(y)y.textContent=new Date().getFullYear();
 var w=$("wa");if(w)w.href="https://wa.me/919450860232?text="+encodeURIComponent("Hello Sarthak Library, I have a question.");
+var oe=d.querySelectorAll("[data-offer]");if(oe.length)try{fetch("https://bypixbchtdyimshlnbkn.supabase.co/rest/v1/rpc/offer_status",{method:"POST",headers:{apikey:"sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h","Content-Type":"application/json"},body:"{}"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||typeof j.filled!="number"||typeof j.total!="number")return;var left=Math.max(0,j.total-j.filled),t=left>0?"Opening offer: "+j.filled+" of "+j.total+" seats filled · only "+left+" left":"All "+j.total+" opening-offer seats are filled";oe.forEach(function(e){e.textContent=t})}).catch(function(){})}catch(e){}
 })();

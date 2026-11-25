@@ -1,7 +1,11 @@
 (function(){var $=function(i){return document.getElementById(i)};
 var mins=25,left=1500,run=null,endAt=0,T0=document.title;
 var AC,sm=document.querySelector(".focus small"),smT=sm.textContent;function unlock(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume()}catch(e){}}
-function beep(){try{unlock();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=880;g.gain.value=.2;o.start();setTimeout(function(){o.stop()},900)}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+var OUT;function chime(){/* bell-style alarm, about 4 seconds, loud but clipped by a limiter */
+unlock();var t0=AC.currentTime+.05;if(!OUT){var cp=AC.createDynamicsCompressor();cp.threshold.value=-8;cp.ratio.value=12;var mg=AC.createGain();mg.gain.value=1.1;cp.connect(mg);mg.connect(AC.destination);OUT=cp}
+function bell(t,f,len,v){[[1,1],[2.01,.5],[3.02,.28],[4.17,.14]].forEach(function(p){var o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f*p[0];g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v*p[1],t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+len);o.connect(g);g.connect(OUT);o.start(t);o.stop(t+len+.05)})}
+for(var r=0;r<3;r++){var b=t0+r*1.35;[784,988,1175,1568].forEach(function(f,i){bell(b+i*.17,f,i==3?1.1:.5,.55)})}}
+function beep(){try{chime()}catch(e){}try{navigator.vibrate&&navigator.vibrate([300,120,300,120,300,120,300,120,300])}catch(e){}}
 function paint(){var m=Math.floor(left/60),s=left%60,t=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;$("tm").textContent=t;document.title=run?t+" | Focus - Sarthak Library":T0}
 function stop(){clearInterval(run);run=null;$("st").textContent="Start";paint()}
 paint();

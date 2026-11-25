@@ -36,7 +36,7 @@
 <div class="hi" lang="hi">सपने बड़े हैं, तो मेहनत भी बड़ी करो।</div>
 <p class="l" data-i="lead">Near Loharon Wala Chauraha, we keep it simple: your own seat, fast Wi-Fi, clean RO water and a strictly quiet room. Built for students preparing for UPSC, SSC, defence, banking and college exams, and open every day.</p>
 <div class="cta"><a class="btn" href="/plans.html#booking" data-i="cta1">Reserve your seat</a><a class="btn ghost" href="/facilities.html" data-i="cta2">Explore facilities</a></div>
-<div class="live"><i></i><span id="hl">Opening offer: first 20 students only</span></div>
+<div class="live"><i></i><span id="hl" data-offer>Opening offer: first 20 students only</span></div>
 <div class="stats"><div><b>50</b><span>Personal seats</span></div><div><b>100 Mbps</b><span>Wi-Fi</span></div><div><b>8am–8pm</b><span>Open daily</span></div></div>
 </div>
 <div class="ht"><div class="focus" role="group" aria-label="Focus session timer"><p class="eb">Free study timer</p><span class="tm" id="tm">25:00</span><div class="modes"><button type="button" aria-pressed="true" data-m="25">25m</button><button type="button" data-m="45">45m</button><button type="button" data-m="60">60m</button></div><button class="btn" id="st" type="button">Start</button><button class="btn ghost" id="rs" type="button">Reset</button><small>Quiet. Focus. Repeat.</small><a href="/pomodoro-timer.html" style="font-size:var(--fs-xs);color:var(--slate)">More free timers →</a></div></div>
@@ -117,15 +117,21 @@ var a=$("p-lsw");a.textContent=act?"Already activated? Log in":"First time here?
 function fdate(x){try{return new Date(x).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}catch(e){return""}}
 function AAD(d){return'<h3>Aadhaar (PDF)</h3><div class="c"><p id="p-as">'+(d.aadhaar_uploaded_at?"Uploaded on <strong>"+esc(fdate(d.aadhaar_uploaded_at))+"</strong>. You can upload again to replace it.":"Not uploaded yet.")+'</p>'+
 '<label>Aadhaar copy as PDF (max 2 MB)<input id="p-af" type="file" accept="application/pdf,.pdf"></label>'+
-'<label style="display:flex;gap:8px;align-items:flex-start"><input id="p-ac" type="checkbox" style="width:auto;margin-top:4px"><span>I agree that Sarthak Library may keep my Aadhaar copy privately, only for identity verification of my membership.</span></label>'+
-'<button class="p full" onclick="LP.up()">Upload Aadhaar PDF</button><small id="p-au" role="status" aria-live="polite"></small></div>'}
+'<fieldset class="dcl"><legend>Declaration (required)</legend><label style="display:flex;gap:8px;align-items:flex-start"><input id="p-ac" type="checkbox" required onchange="document.getElementById(\'p-ab\').disabled=!this.checked" style="width:auto;margin-top:4px"><span>I declare that this Aadhaar copy is being submitted <strong>with the full consent of the Aadhaar holder</strong>. I allow Sarthak Library to store it privately and use it only to verify identity for this membership. It will not be shared with anyone else, and I can ask the library to delete it at any time.</span></label></fieldset>'+
+'<button id="p-ab" class="p full" disabled onclick="LP.up()">Upload Aadhaar PDF</button><small id="p-au" role="status" aria-live="polite"></small></div>'}
+function endOf(d){if(!d.start_date)return null;var s=new Date(d.start_date+"T00:00:00Z"),day=s.getUTCDate();s.setUTCDate(1);s.setUTCMonth(s.getUTCMonth()+(+d.months||1));s.setUTCDate(Math.min(day,new Date(Date.UTC(s.getUTCFullYear(),s.getUTCMonth()+1,0)).getUTCDate()));return s}
+function remBox(d,due){var e=endOf(d),n=null,t=new Date(),td=new Date(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())),m=[];
+if(e){n=Math.ceil((e-td)/864e5);if(n<0)m.push("Your plan <strong>ended on "+fdate(e)+"</strong>.");else if(n<=7)m.push("Your plan <strong>ends on "+fdate(e)+"</strong> ("+(n==0?"today":n+" day"+(n>1?"s":"")+" left")+").")}
+if(due>0)m.push("Pending fee: <strong>₹"+due+"</strong>.");if(!m.length)return"";
+var w="https://wa.me/919450860232?text="+encodeURIComponent("Hello Sarthak Library, I am "+d.name+" (Member ID "+d.member_id+"). I want to pay my fees / renew my plan.");
+return'<div class="c rm" role="alert"><strong>Fee reminder</strong><br>'+m.join(" ")+' Please pay at the library desk or message us to renew and keep your seat.<br><a class="btn sm" style="margin-top:10px" href="'+w+'" target="_blank" rel="noopener">Message the library on WhatsApp</a></div>'}
 function view(d){
-var paid=(d.payments||[]).reduce(function(s,p){return s+(Number(p.amount)||0)},0),due=Math.max(0,(Number(d.total)||0)-paid);
+var paid=(d.payments||[]).reduce(function(s,p){return s+(Number(p.amount)||0)},0),due=Math.max(0,(Number(d.total)||0)+(Number(d.extra)||0)-paid);
 $("p-L").hidden=true;var S=$("p-S");S.hidden=false;
 S.innerHTML='<div class="ah"><a class="lgo" href="#top"><i></i>Sarthak Library</a><button class="btn sm ghost" onclick="LP.out()">Logout</button></div>'+
-'<h2>Hello, '+esc(d.name)+'</h2><p>Member ID <strong>'+esc(d.member_id)+'</strong></p>'+
+'<h2>Hello, '+esc(d.name)+'</h2><p>Member ID <strong>'+esc(d.member_id)+'</strong></p>'+remBox(d,due)+
 '<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
-'<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
+'<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Plan ends:</strong> '+(endOf(d)?esc(fdate(endOf(d))):"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
 '<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
 '<h3>Your details</h3><div class="c">Your registration details (father\'s name, address, alternate mobile, PIN) are collected through the library\'s registration form. '+(FORM?'<a href="'+FORM+'" target="_blank" rel="noopener">Fill or update the registration form</a>':"")+'</div>'+AAD(d)}
 window.LP={
@@ -139,10 +145,10 @@ up:function(){var o=$("p-au"),f=$("p-af").files[0];
 if(!f){o.textContent="Please choose your Aadhaar PDF first.";return}
 if(!/\.pdf$/i.test(f.name)||(f.type&&f.type!=="application/pdf")){o.textContent="Only a PDF file is accepted.";return}
 if(f.size>2097152){o.textContent="The file is larger than 2 MB. Please compress it and try again.";return}
-if(!$("p-ac").checked){o.textContent="Please tick the consent box to continue.";return}
-var fd=new FormData();fd.append("member",mem);fd.append("password",pw);fd.append("file",f);o.textContent="Uploading…";
+if(!$("p-ac").checked){o.textContent="Please tick the declaration box. Without it your Aadhaar cannot be uploaded.";return}
+var fd=new FormData();fd.append("member",mem);fd.append("password",pw);fd.append("consent","yes");fd.append("file",f);o.textContent="Uploading…";
 fetch(U+"/functions/v1/aadhaar-upload",{method:"POST",headers:{apikey:K},body:fd}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){return{s:r.status,j:j}})}).then(function(x){
-if(x.s===200&&x.j.ok){o.textContent="Uploaded ✓";$("p-af").value="";$("p-ac").checked=false;$("p-as").innerHTML="Uploaded on <strong>"+esc(fdate(x.j.uploaded_at))+"</strong>. You can upload again to replace it.";return}
+if(x.s===200&&x.j.ok){o.textContent="Uploaded ✓";$("p-af").value="";$("p-ac").checked=false;$("p-ab").disabled=true;$("p-as").innerHTML="Uploaded on <strong>"+esc(fdate(x.j.uploaded_at))+"</strong>. You can upload again to replace it.";return}
 var e=x.j&&x.j.error;o.textContent=e==="login"?"Your login could not be verified. Please log in again.":e==="too_large"?"The file is larger than 2 MB.":e==="not_pdf"?"This does not look like a valid PDF.":e==="unsafe_pdf"?"This PDF contains active content and was rejected. Please upload a plain scan or the PDF downloaded from UIDAI.":"Could not upload right now. Please try again."}).catch(function(){o.textContent="Could not upload. Check your internet."})},
 out:function(){mem=pw="";$("p-S").hidden=true;$("p-S").innerHTML="";$("p-sp").value="";$("p-L").hidden=false;location.hash="#top"}
 };
