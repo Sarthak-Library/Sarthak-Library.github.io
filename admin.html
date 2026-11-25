@@ -102,7 +102,7 @@ function seenT(){try{return+localStorage.lbSeen||0}catch(e){return 0}}
 function nw(r){var u=Date.parse(upd(r));return!!u&&u>seenT()}
 function seenAll(){var m=seenT();rows.forEach(function(r){var u=Date.parse(upd(r));if(u>m)m=u});try{localStorage.lbSeen=m}catch(e){}draw()}
 function fdt(s){try{return new Date(s).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return String(s||"")}}
-var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/;
+var AP=/^(?!.*\.\.)[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
 function draw(){var RM=remMap();backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
@@ -178,9 +178,15 @@ function aad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r
 fetch(SB+"/storage/v1/object/sign/aadhaar/"+r.aadhaar_path,{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:120})}).then(function(x){return x.json()}).then(function(d){
 if(!d||typeof d.signedURL!=="string"||d.signedURL.indexOf("/object/sign/aadhaar/")!==0){if(w)w.close();alert("Could not open the Aadhaar file. Please log in again and retry.");return}
 var u=SB+"/storage/v1"+d.signedURL;if(w)w.location.href=u;else location.href=u}).catch(function(){if(w)w.close();alert("Network problem. Please try again.")})}
-function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
-api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(function(x){if(!x.ok&&x.status!==404){x.text().then(alert);return}
-return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(chk)})}
+function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!r.aadhaar_path)return;
+var p=String(r.aadhaar_path);if(!AP.test(p)){alert("This file path looks invalid, so nothing was deleted:\n"+p);return}
+if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
+var clear=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(function(y){if(y.ok){load();return}return y.text().then(function(m){alert("Could not update the student record ("+y.status+"). "+m);load()})})};
+api("/storage/v1/object/aadhaar",{method:"DELETE",body:JSON.stringify({prefixes:[p]})}).then(function(x){return x.text().then(function(t){
+if(!x.ok){alert("Could not delete the Aadhaar file ("+x.status+").\n"+t+"\nPlease log in again and retry.");return}
+var a=[];try{a=JSON.parse(t)}catch(e){}
+if(Array.isArray(a)&&!a.length){if(!confirm("Storage did not find or delete this file (it may already be gone, or the delete permission is missing).\nClear the Aadhaar entry from this student's record anyway?"))return}
+return clear()})}).catch(function(e){alert("Network problem: "+e.message)})}
 function renew(id){var r=rows.find(function(x){return x.id==id}),m=prompt("Renew for how many months? (1, 3 or 6)","1");if(!DS[m])return;var e=endD(r),st=(e!="-"&&e>td())?e:td(),pr=Math.round(PR[r.plan_key]*m*DS[m]);if(!confirm("Renew "+m+" month(s) from "+st+"?\nNew fee ₹"+pr+" (added to any existing due)"))return;up(id,{months:+m,start_date:st,total:(r.total||0)+pr})}
 function inv(id){var s=rows.find(function(x){return x.id==id});if(!s||!s.member_id)return;
 if(!confirm("Create a new student-login code for "+s.name+"?\nThis also resets their password if they had one."))return;
