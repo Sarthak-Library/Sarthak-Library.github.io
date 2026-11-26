@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://bypixbchtdyimshlnbkn.supabase.co; img-src data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://bypixbchtdyimshlnbkn.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <script>if(top!==self){try{top.location=self.location}catch(e){}document.documentElement.style.display="none"}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><title>Library Admin</title>
@@ -18,7 +18,7 @@ button.x{color:var(--bad)}small{color:var(--mut)}.due{color:var(--bad)}
 /* login */
 .login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,var(--navy),#1b3558)}
 .lc{width:100%;max-width:360px;background:var(--card);border-radius:var(--r);padding:32px 26px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center}
-.lg{width:52px;height:52px;border-radius:var(--r);background:var(--navy);display:grid;place-items:center;margin:0 auto 14px}.lg i{width:18px;height:18px;background:var(--gold);border-radius:2px;transform:rotate(45deg)}
+.lg{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 14px}.lg img{width:76px;height:76px;border-radius:50%;display:block}.br img{width:30px;height:30px;border-radius:50%;flex:none}.lg i{width:18px;height:18px;background:var(--gold);border-radius:2px;transform:rotate(45deg)}
 .lc h2{margin:0}.lc p{margin:4px 0 20px;color:var(--mut)}.lc input{width:100%;margin-bottom:10px}.lc button{width:100%;min-height:46px}.lc small{display:block;margin-top:12px;color:var(--bad)}
 /* app layout */
 .app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
@@ -64,10 +64,10 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 }
 @media(max-width:420px){.s{gap:10px}.sc{padding:12px}.sc b{font-size:21px}}
 .sn{display:inline-grid;place-items:center;min-width:38px;height:38px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-weight:800;font-size:15px}.fr{color:var(--mut);font-style:italic}hr.sh{border:0;border-top:1px dashed var(--line);margin:8px 0}
-</style></head><body>
-<div id="L" class="login"><div class="lc"><div class="lg"><i></i></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
+</style><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"></head><body>
+<div id="L" class="login"><div class="lc"><div class="lg"><img src="/logo-160.png" alt="Sarthak Library" width="76" height="76"></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
 <div id="A" class="app" hidden>
-<aside class="sb"><div class="br"><i></i>Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
+<aside class="sb"><div class="br"><img src="/logo-96.png" alt="" width="30" height="30">Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
 <main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat no..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
@@ -102,7 +102,7 @@ function seenT(){try{return+localStorage.lbSeen||0}catch(e){return 0}}
 function nw(r){var u=Date.parse(upd(r));return!!u&&u>seenT()}
 function seenAll(){var m=seenT();rows.forEach(function(r){var u=Date.parse(upd(r));if(u>m)m=u});try{localStorage.lbSeen=m}catch(e){}draw()}
 function fdt(s){try{return new Date(s).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return String(s||"")}}
-var AP=/^(?!.*\.\.)[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
+var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/;
 function draw(){var RM=remMap();backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
@@ -178,15 +178,9 @@ function aad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r
 fetch(SB+"/storage/v1/object/sign/aadhaar/"+r.aadhaar_path,{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:120})}).then(function(x){return x.json()}).then(function(d){
 if(!d||typeof d.signedURL!=="string"||d.signedURL.indexOf("/object/sign/aadhaar/")!==0){if(w)w.close();alert("Could not open the Aadhaar file. Please log in again and retry.");return}
 var u=SB+"/storage/v1"+d.signedURL;if(w)w.location.href=u;else location.href=u}).catch(function(){if(w)w.close();alert("Network problem. Please try again.")})}
-function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!r.aadhaar_path)return;
-var p=String(r.aadhaar_path);if(!AP.test(p)){alert("This file path looks invalid, so nothing was deleted:\n"+p);return}
-if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
-var clear=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(function(y){if(y.ok){load();return}return y.text().then(function(m){alert("Could not update the student record ("+y.status+"). "+m);load()})})};
-api("/storage/v1/object/aadhaar",{method:"DELETE",body:JSON.stringify({prefixes:[p]})}).then(function(x){return x.text().then(function(t){
-if(!x.ok){alert("Could not delete the Aadhaar file ("+x.status+").\n"+t+"\nPlease log in again and retry.");return}
-var a=[];try{a=JSON.parse(t)}catch(e){}
-if(Array.isArray(a)&&!a.length){if(!confirm("Storage did not find or delete this file (it may already be gone, or the delete permission is missing).\nClear the Aadhaar entry from this student's record anyway?"))return}
-return clear()})}).catch(function(e){alert("Network problem: "+e.message)})}
+function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
+api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(function(x){if(!x.ok&&x.status!==404){x.text().then(alert);return}
+return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(chk)})}
 function renew(id){var r=rows.find(function(x){return x.id==id}),m=prompt("Renew for how many months? (1, 3 or 6)","1");if(!DS[m])return;var e=endD(r),st=(e!="-"&&e>td())?e:td(),pr=Math.round(PR[r.plan_key]*m*DS[m]);if(!confirm("Renew "+m+" month(s) from "+st+"?\nNew fee ₹"+pr+" (added to any existing due)"))return;up(id,{months:+m,start_date:st,total:(r.total||0)+pr})}
 function inv(id){var s=rows.find(function(x){return x.id==id});if(!s||!s.member_id)return;
 if(!confirm("Create a new student-login code for "+s.name+"?\nThis also resets their password if they had one."))return;

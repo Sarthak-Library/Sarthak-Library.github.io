@@ -178,3 +178,9 @@ body.lock{overflow:hidden}
 @media(max-width:560px){.pt2{min-width:0;font-size:13px}.pt2 caption{padding:12px 10px}.pt2 th,.pt2 td{padding:10px 8px}.pt2 thead th:nth-child(5),.pt2 tbody td:nth-child(5){display:none}}
 
 #app .rm{border-color:var(--err);background:rgba(192,57,43,.08)}#app .dcl{border:1px solid var(--line);border-radius:var(--r-md,10px);padding:10px 12px;margin:10px 0}#app .dcl legend{font-weight:700;padding:0 6px}#app button:disabled{opacity:.5;cursor:not-allowed}
+
+.logo img{width:38px;height:38px;border-radius:50%;flex:none;display:block}
+#app .lgo img{width:40px;height:40px;border-radius:50%;flex:none}
+.fl-logo{display:block;width:88px;height:88px;border-radius:50%;margin:0 0 16px}
+.brand-band{padding:8px 0 40px}.brand-band.top{padding:4px 0 8px}
+.brand-band img{display:block;width:100%;height:auto;border-radius:var(--r-lg);border:1px solid var(--line);background:#000d21}
