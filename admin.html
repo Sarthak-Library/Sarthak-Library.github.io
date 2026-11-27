@@ -46,6 +46,8 @@ td b{font-weight:700}td .sub{display:block;color:var(--mut);font-size:12px;margi
 .ac{display:flex;gap:6px;flex-wrap:wrap;min-width:150px}.ac button{padding:6px 11px;min-height:34px;font-size:13px}
 td[data-l="Period"]{white-space:nowrap}.em{text-align:center;padding:48px 20px;color:var(--mut)}
 .b{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pdlg{max-width:620px}
+canvas.pc{width:100%;height:auto;border-radius:14px;display:block;background:#0d1626}
 dialog{max-width:480px;width:94%;border:0;border-radius:var(--r);background:var(--card);color:var(--ink);padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.4)}dialog::backdrop{background:rgba(8,12,20,.6)}
 dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 0 0;font-size:12px;font-weight:600;color:var(--mut)}dialog input,dialog select{width:100%;margin-top:4px}
 @media(max-width:1000px){.s{grid-template-columns:repeat(2,1fr)}}
@@ -71,6 +73,7 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 <main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat no..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
+<dialog id="PD" class="pdlg"><h3>Student pass</h3><canvas id="p-cv" class="pc"></canvas><p class="sub" style="margin:10px 0">WhatsApp can&#39;t attach a picture by itself: download the pass first, then attach that file in the chat it opens.</p><div class="b"><button class="p" onclick="downloadCanvas($(&#39;p-cv&#39;),(PD.dataset.m||&#39;pass&#39;)+&#39;.png&#39;)">Download pass (PNG)</button><button onclick="PD.waBtn()">Message on WhatsApp</button><button onclick="PD.close()">Close</button></div></dialog>
 <script>
 var FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSfMWdSF65AY7P9y2wJwvNgvtTruaQQekIJatcvc5TYqv0mjwg/viewform";
 var REMIND_DAYS=5;   /* remind students whose plan ends within this many days (or already ended) */
@@ -83,6 +86,42 @@ var F=[["name","Student name"],["mobile","Mobile (10 digits)"],["seat","Seat (1-
 function api(p,o){o=o||{};o.headers={apikey:SK,Authorization:"Bearer "+(tok||SK),"Content-Type":"application/json",Prefer:"return=minimal"};return fetch(SB+p,o)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function sid(x){return String(x==null?"":x).replace(/[^\w-]/g,"")}
+/* ===== Student pass: a shareable ID-style card drawn on a canvas ===== */
+var PASS_IMGS=(function(){var lg=new Image(),bn=new Image();var rd=Promise.all([new Promise(function(r){lg.onload=r;lg.onerror=r;lg.src="/logo.png"}),new Promise(function(r){bn.onload=r;bn.onerror=r;bn.src="/banner-1600.webp"})]);return{lg:lg,bn:bn,rd:rd}})();
+function downloadCanvas(cv,name){var a=document.createElement("a");a.href=cv.toDataURL("image/png");a.download=name;a.click()}
+function drawPass(cv,d){return PASS_IMGS.rd.then(function(){
+var W=1050,H=650,ctx=cv.getContext("2d");cv.width=W;cv.height=H;ctx.save();ctx.beginPath();var rr=24;
+ctx.moveTo(rr,0);ctx.arcTo(W,0,W,H,rr);ctx.arcTo(W,H,0,H,rr);ctx.arcTo(0,H,0,0,rr);ctx.arcTo(0,0,W,0,rr);ctx.closePath();ctx.clip();
+ctx.fillStyle="#0d1626";ctx.fillRect(0,0,W,H);
+if(PASS_IMGS.bn.naturalWidth){var iw=PASS_IMGS.bn.naturalWidth,ih=PASS_IMGS.bn.naturalHeight,ir=iw/ih,cr=W/H,sw,sh,sx,sy;
+if(ir>cr){sh=ih;sw=ih*cr;sx=(iw-sw)/2;sy=0}else{sw=iw;sh=iw/cr;sx=0;sy=(ih-sh)/2}
+ctx.globalAlpha=.16;ctx.drawImage(PASS_IMGS.bn,sx,sy,sw,sh,0,0,W,H);ctx.globalAlpha=1}
+var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(13,22,38,.55)");g.addColorStop(.45,"rgba(13,22,38,.88)");g.addColorStop(1,"rgba(13,22,38,.97)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ctx.strokeStyle="#c5a46d";ctx.lineWidth=3;ctx.strokeRect(11,11,W-22,H-22);ctx.strokeStyle="rgba(197,164,109,.5)";ctx.lineWidth=1;ctx.strokeRect(19,19,W-38,H-38);
+if(PASS_IMGS.lg.naturalWidth){ctx.save();ctx.beginPath();ctx.arc(98,102,52,0,Math.PI*2);ctx.clip();ctx.drawImage(PASS_IMGS.lg,46,50,104,104);ctx.restore();ctx.strokeStyle="#c5a46d";ctx.lineWidth=2;ctx.beginPath();ctx.arc(98,102,52,0,Math.PI*2);ctx.stroke()}
+ctx.fillStyle="#f4ead9";ctx.font="700 33px Georgia, serif";ctx.fillText("SARTHAK LIBRARY",168,92);
+ctx.fillStyle="#c5a46d";ctx.font="600 16px Georgia, serif";ctx.fillText("& SELF STUDY ZONE",170,118);
+ctx.textAlign="right";ctx.fillStyle="#c5a46d";ctx.font="700 15px Arial, sans-serif";ctx.fillText("STUDENT PASS",W-46,70);
+ctx.font="12px Arial, sans-serif";ctx.fillStyle="rgba(244,234,217,.65)";ctx.fillText("Pass No. "+(d.member_id||"-"),W-46,92);ctx.textAlign="left";
+ctx.strokeStyle="rgba(197,164,109,.4)";ctx.beginPath();ctx.moveTo(46,152);ctx.lineTo(W-46,152);ctx.stroke();
+ctx.fillStyle="#fff";ctx.font="700 38px Arial, sans-serif";var nm=d.name||"-";if(ctx.measureText(nm).width>W-94)ctx.font="700 30px Arial, sans-serif";ctx.fillText(nm,47,210);
+ctx.fillStyle="rgba(244,234,217,.7)";ctx.font="14px Arial, sans-serif";ctx.fillText("MEMBER ID   "+(d.member_id||"-"),47,236);
+function field(x,y,label,val,color){ctx.fillStyle="rgba(244,234,217,.5)";ctx.font="11px Arial, sans-serif";ctx.fillText(label,x,y);ctx.fillStyle=color||"#fff";ctx.font="700 22px Arial, sans-serif";ctx.fillText(val,x,y+27)}
+field(47,300,"PLAN / SHIFT",d.planLabel||"-");field(400,300,"SEAT NO.",d.seat?("#"+d.seat):"Not assigned yet");field(700,300,"STATUS",d.statusLabel||"Active",d.statusColor);
+field(47,382,"START DATE",d.startFmt||"-");field(400,382,"VALID UNTIL",d.endFmt||"-");
+ctx.strokeStyle="rgba(197,164,109,.4)";ctx.beginPath();ctx.moveTo(46,H-118);ctx.lineTo(W-46,H-118);ctx.stroke();
+ctx.fillStyle="rgba(244,234,217,.75)";ctx.font="13px Arial, sans-serif";ctx.fillText("Near Loharon Wala Chauraha, Shahjahanpur, UP",47,H-84);ctx.fillText("WhatsApp / Call: +91 94508 60232",47,H-62);
+ctx.fillStyle="rgba(244,234,217,.5)";ctx.font="italic 12px Arial, sans-serif";ctx.fillText("This pass certifies a reserved seat at Sarthak Library for the period shown above.",47,H-36);
+ctx.textAlign="right";ctx.fillStyle="#f4ead9";ctx.font="italic 27px Georgia, serif";ctx.fillText("Sarthak Library",W-47,H-62);
+ctx.strokeStyle="rgba(244,234,217,.45)";ctx.beginPath();ctx.moveTo(W-236,H-50);ctx.lineTo(W-47,H-50);ctx.stroke();
+ctx.font="11px Arial, sans-serif";ctx.fillStyle="rgba(244,234,217,.55)";ctx.fillText("Authorized Signatory",W-47,H-32);ctx.textAlign="left";ctx.restore()})}
+function sharePass(id){var r=rows.find(function(x){return x.id==id});if(!r||!r.member_id)return;
+var e=endD(r),expired=e!="-"&&e<td();
+drawPass($("p-cv"),{name:r.name,member_id:r.member_id,planLabel:P[r.plan_key]||r.plan_key,seat:r.seat,startFmt:r.start_date||"-",endFmt:e,statusLabel:expired?"Expired":"Active",statusColor:expired?"#ff8a80":"#7ee2b8"});
+PD.dataset.m=r.member_id;
+PD.waBtn=function(){var t="Hello "+r.name+", your seat at Sarthak Library is confirmed!\n"+"Member ID: "+r.member_id+"\n"+"Plan: "+(P[r.plan_key]||r.plan_key)+(r.seat?", Seat "+r.seat:"")+"\n"+"Valid: "+(r.start_date||"-")+" to "+e+"\n\n"+"Your Student Pass is attached below \u2014 please save it. You can log in anytime to view or re-download it.";window.open("https://wa.me/91"+dg(r.mobile)+"?text="+encodeURIComponent(t),"_blank")};
+PD.showModal()}
+
 function dg(x){return String(x==null?"":x).replace(/\D/g,"")}
 function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Error: "+(d.msg||d.error_description||d.message||JSON.stringify(d))}).catch(function(e){$("m").textContent="Network error: "+e.message})}
 $("w").addEventListener("keydown",function(e){if(e.key=="Enter")login()});
@@ -123,7 +162,7 @@ return'<tr><td class="mb"><b>'+(r.member_id?esc(r.member_id)+" · ":"")+esc(r.na
 '<td data-l="Period"><span>'+esc(r.start_date||"-")+'<span class="sub">to '+esc(endD(r))+"</span></span></td>"+
 '<td data-l="Fees"><span><b>'+m(r.total||0)+"</b>"+(r.extra?' <small>+ '+m(r.extra)+" deposit</small>":"")+'<span class="sub">Paid '+m(paid(r))+' · <b class="'+(d>0?"due":"")+'">Due '+m(d)+"</b></span>"+(pl?'<span class="sub">'+pl+"</span>":"")+"</span></td>"+
 '<td data-l="Status">'+bs+(ok&&RM[r.id]?'<span class="sub">Reminder opened '+esc(RM[r.id])+"</span>":"")+"</td>"+
-'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button onclick="allot('+i+')">Allot seat</button><button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button'+(d>0||ex<=REMIND_DAYS?' class="p"':"")+' onclick="remind('+i+')">Fee reminder</button><button onclick="sms('+i+')">SMS</button><button onclick="inv('+i+')">Login code</button>':"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
+'<td class="at"><div class="ac">'+(ok?"":'<button class="p" onclick="conf('+i+')">Confirm</button>'+(r.status=="waiting"?"":'<button onclick="up('+i+",{status:\'waiting\'})\">Waitlist</button>"))+(ok?'<button onclick="allot('+i+')">Allot seat</button><button class="p" onclick="pay('+i+')">+ Payment</button><button onclick="renew('+i+')">Renew</button><button'+(d>0||ex<=REMIND_DAYS?' class="p"':"")+' onclick="remind('+i+')">Fee reminder</button><button onclick="sms('+i+')">SMS</button><button onclick="inv('+i+')">Login code</button>'+(r.member_id?'<button onclick="sharePass('+i+')">Share pass</button>':""):"")+(r.aadhaar_path?'<button onclick="aad('+i+')">View Aadhaar</button><button class="x" onclick="raad('+i+')">Remove Aadhaar</button>':"")+'<button onclick="wa('+i+')">WhatsApp</button><button onclick="openForm('+i+')">Edit</button><button class="x" onclick="del('+i+')">Delete</button></div></td></tr>'}).join("")+"</tbody></table>"}
 
 /* ===== Seat chart: every seat 1-50 with the student sitting in it ===== */
 var SEATS=50;
@@ -167,9 +206,10 @@ function remText(r){var d=due(r),n=dl(r),e=endD(r),t="Hello "+r.name+", this is 
 function remind(id){var r=rows.find(function(x){return x.id==id});if(!r)return;remMark(id);window.open("https://wa.me/91"+dg(r.mobile)+"?text="+encodeURIComponent(remText(r)),"_blank");draw()}
 function sms(id){var r=rows.find(function(x){return x.id==id});if(!r)return;remMark(id);location.href="sms:+91"+dg(r.mobile)+"?&body="+encodeURIComponent(remText(r))}
 function chk(r){if(!r.ok)r.text().then(alert);load()}
-function up(id,b){var r=rows.find(function(x){return x.id==id});var ns=b.seat!==undefined?b.seat:r.seat,np=b.plan_key!==undefined?b.plan_key:r.plan_key;if(b.status=="approved"&&ns&&rows.some(function(x){return x.id!=id&&x.status=="approved"&&x.seat==ns&&(x.plan_key=="full"||np=="full"||x.plan_key==np)})&&!confirm("Seat "+ns+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
+function clash(seat,plan,excludeId){return seat&&rows.some(function(x){return x.id!=excludeId&&x.status=="approved"&&x.seat==seat&&(x.plan_key=="full"||plan=="full"||x.plan_key==plan)})}
+function up(id,b){var r=rows.find(function(x){return x.id==id});var ns=b.seat!==undefined?b.seat:r.seat,np=b.plan_key!==undefined?b.plan_key:r.plan_key;if(b.status=="approved"&&clash(ns,np,id)&&!confirm("Seat "+ns+" is already taken in this shift. Confirm anyway?"))return;return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify(b)}).then(chk)}
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}
-function pay(id){var a=prompt("Amount received (₹)");if(!a||!+a)return;api("/rest/v1/payments",{method:"POST",body:JSON.stringify({booking_id:id,amount:Math.round(+a),paid_on:td()})}).then(chk)}
+function pay(id){var a=prompt("Amount received (₹)");if(a==null)return;if(!(+a>0)){alert("Enter an amount greater than 0.");return}api("/rest/v1/payments",{method:"POST",body:JSON.stringify({booking_id:id,amount:Math.round(+a),paid_on:td()})}).then(chk)}
 function dp(id){if(confirm("Remove this payment entry?"))api("/rest/v1/payments?id=eq."+id,{method:"DELETE"}).then(chk)}
 function del(id){var r=rows.find(function(x){return x.id==id});if(!confirm("Delete this student and their payments permanently?"))return;
 var go=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(chk)};
@@ -202,7 +242,7 @@ if(!id)$("f_total").value=calc();["f_plan_key","f_months"].forEach(function(k){$
 function calc(){return Math.round(PR[$("f_plan_key").value]*$("f_months").value*DS[$("f_months").value])}
 function saveF(){var b={};F.forEach(function(x){b[x[0]]=$("f_"+x[0]).value.trim()||null});["plan_key","status"].forEach(function(k){b[k]=$("f_"+k).value});b.months=+$("f_months").value;b.seat=b.seat?+b.seat:null;b.total=+b.total||0;b.extra=+b.extra||0;
 if(!b.name||!/^\d{10}$/.test(b.mobile||"")){$("de").textContent="Name and a 10-digit mobile are required.";return}if(b.seat&&(b.seat<1||b.seat>50)){$("de").textContent="Seat must be 1-50.";return}
-var id=D.dataset.id;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{method:"POST",body:JSON.stringify(b)}).then(chk)}
+var id=D.dataset.id;if(!id&&b.status=="approved"&&clash(b.seat,b.plan_key,null)&&!confirm("Seat "+b.seat+" is already taken in this shift. Add anyway?"))return;D.close();if(id)up(id,b);else api("/rest/v1/bookings",{method:"POST",body:JSON.stringify(b)}).then(chk)}
 function cell(v){var s=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(s)&&!/^-?\d+(\.\d+)?$/.test(s))s="'"+s;return s.replace(/"/g,'""')}
 function csv(){var h=["member_id","name","mobile","father_name","alt_mobile","address","pin","aadhaar_uploaded","plan_key","months","seat","start_date","end_date","total","extra","paid","due","status","notes"];var t=[h.join(",")].concat(rows.map(function(r){r=Object.assign({},r,{end_date:endD(r),paid:paid(r),due:due(r),aadhaar_uploaded:r.aadhaar_path?"yes":"no"});return h.map(function(k){return'"'+cell(r[k])+'"'}).join(",")})).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="library-"+td()+".csv";a.click();try{localStorage.lb=td()}catch(e){}}
 function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;var nn=rows.filter(nw).length,ub=nn?'<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">'+nn+(nn==1?" student has":" students have")+' updated their details or Aadhaar. <button onclick="f=\'upd\';draw()">View</button> <button onclick="seenAll()">Mark as seen</button></div>':"";

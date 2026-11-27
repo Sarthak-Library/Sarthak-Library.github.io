@@ -106,7 +106,37 @@ try{navigator.modelContext.registerTool({name:"open_booking_form",description:"O
 var FORM="https://docs.google.com/forms/d/e/1FAIpQLSfMWdSF65AY7P9y2wJwvNgvtTruaQQekIJatcvc5TYqv0mjwg/viewform",U="https://bypixbchtdyimshlnbkn.supabase.co",K="sb_publishable_jURYK2fzBX1ZJnt5n8bLXw_f1TkxO8h";
 var $=function(i){return document.getElementById(i)},mem="",pw="",act=false,
 PL={"1":"Shift 1 (8:00 AM – 2:00 PM)","2":"Shift 2 (2:00 PM – 8:00 PM)","full":"Full day (8:00 AM – 8:00 PM)"};
+var PLS={"1":"Shift 1 · Morning","2":"Shift 2 · Evening","full":"Full Day"};
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var PASS_IMGS=(function(){var lg=new Image(),bn=new Image();var rd=Promise.all([new Promise(function(r){lg.onload=r;lg.onerror=r;lg.src="/logo.png"}),new Promise(function(r){bn.onload=r;bn.onerror=r;bn.src="/banner-1600.webp"})]);return{lg:lg,bn:bn,rd:rd}})();
+function downloadCanvas(cv,name){var a=document.createElement("a");a.href=cv.toDataURL("image/png");a.download=name;a.click()}
+function drawPass(cv,d){return PASS_IMGS.rd.then(function(){
+var W=1050,H=650,ctx=cv.getContext("2d");cv.width=W;cv.height=H;ctx.save();ctx.beginPath();var rr=24;
+ctx.moveTo(rr,0);ctx.arcTo(W,0,W,H,rr);ctx.arcTo(W,H,0,H,rr);ctx.arcTo(0,H,0,0,rr);ctx.arcTo(0,0,W,0,rr);ctx.closePath();ctx.clip();
+ctx.fillStyle="#0d1626";ctx.fillRect(0,0,W,H);
+if(PASS_IMGS.bn.naturalWidth){var iw=PASS_IMGS.bn.naturalWidth,ih=PASS_IMGS.bn.naturalHeight,ir=iw/ih,cr=W/H,sw,sh,sx,sy;
+if(ir>cr){sh=ih;sw=ih*cr;sx=(iw-sw)/2;sy=0}else{sw=iw;sh=iw/cr;sx=0;sy=(ih-sh)/2}
+ctx.globalAlpha=.16;ctx.drawImage(PASS_IMGS.bn,sx,sy,sw,sh,0,0,W,H);ctx.globalAlpha=1}
+var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(13,22,38,.55)");g.addColorStop(.45,"rgba(13,22,38,.88)");g.addColorStop(1,"rgba(13,22,38,.97)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ctx.strokeStyle="#c5a46d";ctx.lineWidth=3;ctx.strokeRect(11,11,W-22,H-22);ctx.strokeStyle="rgba(197,164,109,.5)";ctx.lineWidth=1;ctx.strokeRect(19,19,W-38,H-38);
+if(PASS_IMGS.lg.naturalWidth){ctx.save();ctx.beginPath();ctx.arc(98,102,52,0,Math.PI*2);ctx.clip();ctx.drawImage(PASS_IMGS.lg,46,50,104,104);ctx.restore();ctx.strokeStyle="#c5a46d";ctx.lineWidth=2;ctx.beginPath();ctx.arc(98,102,52,0,Math.PI*2);ctx.stroke()}
+ctx.fillStyle="#f4ead9";ctx.font="700 33px Georgia, serif";ctx.fillText("SARTHAK LIBRARY",168,92);
+ctx.fillStyle="#c5a46d";ctx.font="600 16px Georgia, serif";ctx.fillText("& SELF STUDY ZONE",170,118);
+ctx.textAlign="right";ctx.fillStyle="#c5a46d";ctx.font="700 15px Arial, sans-serif";ctx.fillText("STUDENT PASS",W-46,70);
+ctx.font="12px Arial, sans-serif";ctx.fillStyle="rgba(244,234,217,.65)";ctx.fillText("Pass No. "+(d.member_id||"-"),W-46,92);ctx.textAlign="left";
+ctx.strokeStyle="rgba(197,164,109,.4)";ctx.beginPath();ctx.moveTo(46,152);ctx.lineTo(W-46,152);ctx.stroke();
+ctx.fillStyle="#fff";ctx.font="700 38px Arial, sans-serif";var nm=d.name||"-";if(ctx.measureText(nm).width>W-94)ctx.font="700 30px Arial, sans-serif";ctx.fillText(nm,47,210);
+ctx.fillStyle="rgba(244,234,217,.7)";ctx.font="14px Arial, sans-serif";ctx.fillText("MEMBER ID   "+(d.member_id||"-"),47,236);
+function field(x,y,label,val,color){ctx.fillStyle="rgba(244,234,217,.5)";ctx.font="11px Arial, sans-serif";ctx.fillText(label,x,y);ctx.fillStyle=color||"#fff";ctx.font="700 22px Arial, sans-serif";ctx.fillText(val,x,y+27)}
+field(47,300,"PLAN / SHIFT",d.planLabel||"-");field(400,300,"SEAT NO.",d.seat?("#"+d.seat):"Not assigned yet");field(700,300,"STATUS",d.statusLabel||"Active",d.statusColor);
+field(47,382,"START DATE",d.startFmt||"-");field(400,382,"VALID UNTIL",d.endFmt||"-");
+ctx.strokeStyle="rgba(197,164,109,.4)";ctx.beginPath();ctx.moveTo(46,H-118);ctx.lineTo(W-46,H-118);ctx.stroke();
+ctx.fillStyle="rgba(244,234,217,.75)";ctx.font="13px Arial, sans-serif";ctx.fillText("Near Loharon Wala Chauraha, Shahjahanpur, UP",47,H-84);ctx.fillText("WhatsApp / Call: +91 94508 60232",47,H-62);
+ctx.fillStyle="rgba(244,234,217,.5)";ctx.font="italic 12px Arial, sans-serif";ctx.fillText("This pass certifies a reserved seat at Sarthak Library for the period shown above.",47,H-36);
+ctx.textAlign="right";ctx.fillStyle="#f4ead9";ctx.font="italic 27px Georgia, serif";ctx.fillText("Sarthak Library",W-47,H-62);
+ctx.strokeStyle="rgba(244,234,217,.45)";ctx.beginPath();ctx.moveTo(W-236,H-50);ctx.lineTo(W-47,H-50);ctx.stroke();
+ctx.font="11px Arial, sans-serif";ctx.fillStyle="rgba(244,234,217,.55)";ctx.fillText("Authorized Signatory",W-47,H-32);ctx.textAlign="left";ctx.restore()})}
+
 function rpc(n,b){return fetch(U+"/rest/v1/rpc/"+n,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){if(!r.ok)throw new Error("net");return r.json()})}
 function say(t){$("p-sx").textContent=t||""}
 function route(){var on=location.hash==="#student";$("app").hidden=!on;$("site").hidden=on;if(on){if($("p-L").hidden&&!mem)$("p-L").hidden=false;paintLogin();window.scrollTo(0,0)}}
@@ -132,10 +162,13 @@ var paid=(d.payments||[]).reduce(function(s,p){return s+(Number(p.amount)||0)},0
 $("p-L").hidden=true;var S=$("p-S");S.hidden=false;
 S.innerHTML='<div class="ah"><a class="lgo" href="#top"><img src="/logo-96.png" alt="" width="40" height="40">Sarthak Library</a><button class="btn sm ghost" onclick="LP.out()">Logout</button></div>'+
 '<h2>Hello, '+esc(d.name)+'</h2><p>Member ID <strong>'+esc(d.member_id)+'</strong></p>'+remBox(d,due)+
+'<h3>Your student pass</h3><div class="c" style="padding:14px"><canvas id="p-cv" style="width:100%;height:auto;display:block;border-radius:14px"></canvas><button class="btn sm" style="margin-top:12px" onclick="LP.dlPass()">Download my pass (PNG)</button></div>'+
 '<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
 '<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Plan ends:</strong> '+(endOf(d)?esc(fdate(endOf(d))):"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
 '<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
-'<h3>Your details</h3><div class="c">Your registration details (father\'s name, address, alternate mobile, PIN) are collected through the library\'s registration form. '+(FORM?'<a href="'+FORM+'" target="_blank" rel="noopener">Fill or update the registration form</a>':"")+'</div>'+AAD(d)}
+'<h3>Your details</h3><div class="c">Your registration details (father\'s name, address, alternate mobile, PIN) are collected through the library\'s registration form. '+(FORM?'<a href="'+FORM+'" target="_blank" rel="noopener">Fill or update the registration form</a>':"")+'</div>'+AAD(d);
+var pe=endOf(d),today=new Date(),td0=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate())),expired=pe&&pe<td0;
+drawPass($("p-cv"),{name:d.name,member_id:d.member_id,planLabel:PLS[d.plan_key]||d.plan_key,seat:d.seat,startFmt:d.start_date?fdate(d.start_date):"-",endFmt:pe?fdate(pe):"-",statusLabel:expired?"Expired":"Active",statusColor:expired?"#ff8a80":"#7ee2b8"})}
 window.LP={
 sGo:function(){var m=$("p-sm").value.trim(),p=$("p-sp").value;if(!m||!p){say("Please enter your Member ID and password.");return}
 say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_pass:p}).then(function(d){if(!d){say("Member ID or password is wrong, or the account is locked for 15 minutes after 5 wrong tries.");return}mem=m;pw=p;say("");view(d)})};
@@ -151,6 +184,7 @@ var fd=new FormData();fd.append("member",mem);fd.append("password",pw);fd.append
 fetch(U+"/functions/v1/aadhaar-upload",{method:"POST",headers:{apikey:K},body:fd}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){return{s:r.status,j:j}})}).then(function(x){
 if(x.s===200&&x.j.ok){o.textContent="Uploaded ✓";$("p-af").value="";$("p-ac").checked=false;$("p-ab").disabled=true;$("p-as").innerHTML="Uploaded on <strong>"+esc(fdate(x.j.uploaded_at))+"</strong>. You can upload again to replace it.";return}
 var e=x.j&&x.j.error;o.textContent=e==="login"?"Your login could not be verified. Please log in again.":e==="too_large"?"The file is larger than 2 MB.":e==="not_pdf"?"This does not look like a valid PDF.":e==="unsafe_pdf"?"This PDF contains active content and was rejected. Please upload a plain scan or the PDF downloaded from UIDAI.":"Could not upload right now. Please try again."}).catch(function(){o.textContent="Could not upload. Check your internet."})},
+dlPass:function(){downloadCanvas($("p-cv"),(mem||"pass")+".png")},
 out:function(){mem=pw="";$("p-S").hidden=true;$("p-S").innerHTML="";$("p-sp").value="";$("p-L").hidden=false;location.hash="#top"}
 };
 $("p-sL").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();LP.sGo()}});
