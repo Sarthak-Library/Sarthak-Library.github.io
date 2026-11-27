@@ -11,11 +11,11 @@ sync();
 $("pg").innerHTML=plans.map(function(p,i){return'<div class="pc'+(i==sel?" on":"")+'" data-i="'+i+'"><div class="t"><h3>'+p[0]+"</h3>"+'<span class="bd">Save ₹100 · first 20</span>'+'</div><div class="h">'+p[1]+'</div><div class="pr">'+fmt(p[2])+'<small>/ month</small></div><div class="old">Regular '+fmt(p[3])+'</div><div class="s">'+["Best for morning prep","Best for evening study","Best for a full day of prep"][i]+'</div><button class="btn'+(i==sel?"":" ghost")+'" type="button" aria-pressed="'+(i==sel)+'" aria-label="'+(i==sel?"Selected: ":"Choose ")+p[0]+' plan">'+(i==sel?"Selected ✓":"Choose plan")+'</button></div>'}).join("");
 if(!$("pl").options.length)$("pl").innerHTML=plans.map(function(p,i){return"<option value="+i+">"+p[0]+" · "+fmt(p[2])+"</option>"}).join("");$("pl").value=sel;$("du").value=dur;
 $("tl").textContent="Total for "+dur+(dur==1?" month":" months");$("tv").textContent=fmt(total());var q=plans[sel],sv=(q[3]||q[2])*dur-total();$("sv").textContent=sv>0?"You save "+fmt(sv)+" compared with regular fees.":"";}
-function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mob").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+"\nDuration: "+dur+" month(s)\nStart date: "+($("sd").value||"-")+"\nFree trial: "+($("tr").checked?"Yes":"No")+"\nEstimated fee: "+fmt(total())+"\nReferrer: "+($("rf").value||"-");$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t);var v=$("sd").value;$("psn").textContent=v?v.split("-").reverse().join("-"):"-"}
+function link(){var t="Hello Sarthak Library, I want to reserve a seat.\nName: "+($("nm").value||"-")+"\nMobile: "+($("mob").value||"-")+"\nPreparing for: "+$("pf").value+"\nPlan: "+plans[sel][0]+"\nDuration: "+dur+" month(s)\nStart date: "+($("sd").value||"-")+"\nFree trial: "+($("tr").checked?"Yes":"No")+"\nAgreed to Terms: "+($("tc")&&$("tc").checked?"Yes":"No")+"\nEstimated fee: "+fmt(total())+"\nReferrer: "+($("rf").value||"-");$("sw").href="https://wa.me/"+NUM+"?text="+encodeURIComponent(t);var v=$("sd").value;$("psn").textContent=v?v.split("-").reverse().join("-"):"-"}
 $("pg").onclick=function(e){var c=e.target.closest(".pc");if(c){$("pl").value=+c.dataset.i;render();if(e.target.closest("button"))$("booking").scrollIntoView()}};
 ["pl","du"].forEach(function(i){["change","input","click","keyup"].forEach(function(ev){$(i).addEventListener(ev,function(){var a=sel,b=dur;sync();if(a!==sel||b!==dur)render()})})});
 addEventListener("pageshow",function(){render();link()});
-["nm","mob","pf","rf","sd","tr"].forEach(function(i){if($(i))$(i).addEventListener("input",link);if($(i))$(i).addEventListener("change",link)});
+["nm","mob","pf","rf","sd","tr","tc"].forEach(function(i){if($(i))$(i).addEventListener("input",link);if($(i))$(i).addEventListener("change",link)});
 $("mob").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"")});
 $("nm").addEventListener("input",function(){$("pn").textContent=this.value||"Your name"});
 /* booking wizard */
@@ -33,6 +33,7 @@ try{fetch(SBU+"/rest/v1/rpc/submit_booking",{method:"POST",keepalive:true,header
 }
 $("sw").onclick=function(e){e.preventDefault();var nm=$("nm").value.trim(),mb=$("mob").value,nok=nm.length>=2&&nm.length<=60,mok=/^[6-9]\d{9}$/.test(mb);$("nm").setAttribute("aria-invalid",!nok);$("mob").setAttribute("aria-invalid",!mok);
 if(!nok||!mok){$("er").textContent="Please enter your name and a valid 10-digit mobile number.";(!nok?$("nm"):$("mob")).focus();return}
+$("tc").setAttribute("aria-invalid",!$("tc").checked);if(!$("tc").checked){$("er").textContent="Please tick the box to agree to the Terms.";$("tc").focus();return}
 $("er").textContent="Opening WhatsApp. Just press send there and we will confirm your seat.";link();saveReq(nm,mb);var u=$("sw").href,w=window.open(u,"_blank");if(w)w.opener=null;else location.href=u};
 
 go(0);render();

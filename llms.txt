@@ -26,6 +26,7 @@
 - [FAQ](https://sarthak-library.github.io/faq.html): Fees, timings, free trial, seats and concessions.
 - [Facilities](https://sarthak-library.github.io/facilities.html): Seating, Wi-Fi, RO water, CCTV and silence rules.
 - [Privacy](https://sarthak-library.github.io/privacy.html): How booking requests, the student portal and browser storage are handled.
+- [Terms](https://sarthak-library.github.io/terms.html): Seats, shifts, fees, refunds, library rules, student portal and Aadhaar handling.
 - [Contact](https://sarthak-library.github.io/contact.html): Address, phone and directions.
 - [Best Library in Shahjahanpur](https://sarthak-library.github.io/best-library-in-shahjahanpur.html): Looking for a quiet self-study library in Shahjahanpur? Explore personal seating, 100 Mbps Wi-Fi, RO water and CCTV at Sarthak Library.
 - [Self-Study Library Near Me in Shahjahanpur](https://sarthak-library.github.io/best-library-near-me-shahjahanpur.html): Searching for a library near you in Shahjahanpur? Find Sarthak Library in Gangapuram Colony, Tilhar Zai, with personal seats and daily study hours.
