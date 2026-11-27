@@ -69,7 +69,7 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 </style><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"></head><body>
 <div id="L" class="login"><div class="lc"><div class="lg"><img src="/logo-160.png" alt="Sarthak Library" width="76" height="76"></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
 <div id="A" class="app" hidden>
-<aside class="sb"><div class="br"><img src="/logo-96.png" alt="" width="30" height="30">Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
+<aside class="sb"><div class="br"><img src="/logo-96.png" alt="" width="30" height="30">Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button id="nt" onclick="toggleNotif()"></button><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
 <main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat no..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
@@ -123,6 +123,15 @@ PD.waBtn=function(){var t="Hello "+r.name+", your seat at Sarthak Library is con
 PD.showModal()}
 
 function dg(x){return String(x==null?"":x).replace(/\D/g,"")}
+function notifOn(){try{return localStorage.lbNotif==="1"}catch(e){return false}}
+function paintNt(){var b=$("nt");if(!b)return;b.textContent=notifOn()&&"Notification"in window&&Notification.permission==="granted"?"🔔 Fee alerts on":"🔕 Turn on fee alerts"}
+function toggleNotif(){if(notifOn()){try{localStorage.lbNotif="0"}catch(e){}paintNt();return}
+if(!("Notification"in window)){alert("Notifications are not supported in this browser.");return}
+Notification.requestPermission().then(function(p){if(p==="granted"){try{localStorage.lbNotif="1"}catch(e){}alert("Fee alerts are on. While you keep this admin tab open (even in another window), you will get one daily alert for students who need a fee reminder.")}else alert("Notifications were blocked. You can allow them again from your browser's site settings.");paintNt()})}
+function notifyDue(nr){if(!nr||!notifOn()||!("Notification"in window)||Notification.permission!=="granted")return;var last;try{last=localStorage.lbNotifDay}catch(e){}if(last===td())return;
+try{var n=new Notification("Sarthak Library admin",{body:nr+(nr==1?" student needs":" students need")+" a fee reminder today.",tag:"sl-admin-fees",renotify:true});n.onclick=function(){window.focus();f="rem";draw();n.close()}}catch(e){}
+try{localStorage.lbNotifDay=td()}catch(e){}}
+
 function login(){fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:$("e").value,password:$("w").value})}).then(function(r){return r.json()}).then(function(d){if(d.access_token){tok=sessionStorage.t=d.access_token;load()}else $("m").textContent="Error: "+(d.msg||d.error_description||d.message||JSON.stringify(d))}).catch(function(e){$("m").textContent="Network error: "+e.message})}
 $("w").addEventListener("keydown",function(e){if(e.key=="Enter")login()});
 function out(){sessionStorage.clear();location.reload()}
@@ -141,7 +150,7 @@ function seenT(){try{return+localStorage.lbSeen||0}catch(e){return 0}}
 function nw(r){var u=Date.parse(upd(r));return!!u&&u>seenT()}
 function seenAll(){var m=seenT();rows.forEach(function(r){var u=Date.parse(upd(r));if(u>m)m=u});try{localStorage.lbSeen=m}catch(e){}draw()}
 function fdt(s){try{return new Date(s).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return String(s||"")}}
-var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/;
+var AP=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/aadhaar\.pdf$/i;
 function draw(){var RM=remMap();backupNote();var ap=rows.filter(function(r){return r.status=="approved"}),col=0,dd=0,np=rows.filter(function(r){return r.status=="pending"}).length;ap.forEach(function(r){col+=paid(r);dd+=Math.max(0,due(r))});
 function m(n){return"₹"+Number(n).toLocaleString("en-IN")}
 $("st").innerHTML='<div class="sc"><small>Active students</small><b>'+ap.length+'</b></div><div class="sc g"><small>Fees collected</small><b>'+m(col)+'</b></div><div class="sc r"><small>Fees due</small><b>'+m(dd)+'</b></div><div class="sc i"><small>New requests</small><b>'+np+'</b></div>';
@@ -211,16 +220,19 @@ function up(id,b){var r=rows.find(function(x){return x.id==id});var ns=b.seat!==
 function conf(id){var r=rows.find(function(x){return x.id==id});up(id,{status:"approved",extra:r.extra||JOIN_FEE})}
 function pay(id){var a=prompt("Amount received (₹)");if(a==null)return;if(!(+a>0)){alert("Enter an amount greater than 0.");return}api("/rest/v1/payments",{method:"POST",body:JSON.stringify({booking_id:id,amount:Math.round(+a),paid_on:td()})}).then(chk)}
 function dp(id){if(confirm("Remove this payment entry?"))api("/rest/v1/payments?id=eq."+id,{method:"DELETE"}).then(chk)}
+function sdel(path){return api("/storage/v1/object/aadhaar",{method:"DELETE",body:JSON.stringify({prefixes:[path]})}).then(function(x){if(!x.ok)return x.text().then(function(t){throw new Error(t||("HTTP "+x.status))});return x.json().catch(function(){return[]})})}
 function del(id){var r=rows.find(function(x){return x.id==id});if(!confirm("Delete this student and their payments permanently?"))return;
 var go=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"DELETE"}).then(chk)};
-if(r&&AP.test(r.aadhaar_path||""))api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(go,go);else go()}
+if(r&&AP.test(r.aadhaar_path||""))sdel(r.aadhaar_path).then(go,go);else go()}
 function aad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;var w=window.open("about:blank","_blank");if(w)w.opener=null;
 fetch(SB+"/storage/v1/object/sign/aadhaar/"+r.aadhaar_path,{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:120})}).then(function(x){return x.json()}).then(function(d){
 if(!d||typeof d.signedURL!=="string"||d.signedURL.indexOf("/object/sign/aadhaar/")!==0){if(w)w.close();alert("Could not open the Aadhaar file. Please log in again and retry.");return}
 var u=SB+"/storage/v1"+d.signedURL;if(w)w.location.href=u;else location.href=u}).catch(function(){if(w)w.close();alert("Network problem. Please try again.")})}
-function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
-api("/storage/v1/object/aadhaar/"+r.aadhaar_path,{method:"DELETE"}).then(function(x){if(!x.ok&&x.status!==404){x.text().then(alert);return}
-return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(chk)})}
+function raad(id){var r=rows.find(function(x){return x.id==id});if(!r||!r.aadhaar_path)return;
+var clr=function(){return api("/rest/v1/bookings?id=eq."+id,{method:"PATCH",body:JSON.stringify({aadhaar_path:null,aadhaar_uploaded_at:null})}).then(chk)};
+if(!AP.test(r.aadhaar_path)){if(confirm("The Aadhaar file path of "+r.name+" looks unusual, so the file cannot be deleted from here:\n"+r.aadhaar_path+"\n\nClear the Aadhaar record only? (Delete the file in Supabase Storage yourself.)"))clr();return}
+if(!confirm("Permanently delete the Aadhaar PDF of "+r.name+"?"))return;
+sdel(r.aadhaar_path).then(function(d){if(!(Array.isArray(d)&&d.length)&&!confirm("Supabase did not confirm deleting the file. It may already be gone, or the storage delete permission may be missing.\n\nClear the Aadhaar record for "+r.name+" anyway?"))return;return clr()}).catch(function(e){alert("Could not remove the Aadhaar file: "+(e&&e.message||e))})}
 function renew(id){var r=rows.find(function(x){return x.id==id}),m=prompt("Renew for how many months? (1, 3 or 6)","1");if(!DS[m])return;var e=endD(r),st=(e!="-"&&e>td())?e:td(),pr=Math.round(PR[r.plan_key]*m*DS[m]);if(!confirm("Renew "+m+" month(s) from "+st+"?\nNew fee ₹"+pr+" (added to any existing due)"))return;up(id,{months:+m,start_date:st,total:(r.total||0)+pr})}
 function inv(id){var s=rows.find(function(x){return x.id==id});if(!s||!s.member_id)return;
 if(!confirm("Create a new student-login code for "+s.name+"?\nThis also resets their password if they had one."))return;
@@ -248,6 +260,7 @@ function csv(){var h=["member_id","name","mobile","father_name","alt_mobile","ad
 function backupNote(){var lb;try{lb=localStorage.lb}catch(e){}var d=lb?Math.floor((new Date(td())-new Date(lb))/864e5):999;var nn=rows.filter(nw).length,ub=nn?'<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">'+nn+(nn==1?" student has":" students have")+' updated their details or Aadhaar. <button onclick="f=\'upd\';draw()">View</button> <button onclick="seenAll()">Mark as seen</button></div>':"";
 var rm=remMap(),nr=rows.filter(function(r){return vis(r,"rem")&&rm[r.id]!=td()}).length,filled=rows.filter(function(r){return r.status=="approved"}).length;
 document.title=(nr?"("+nr+") ":"")+"Library Admin";
+paintNt();notifyDue(nr);
 var rb=nr?'<div class="c">'+nr+(nr==1?" student needs":" students need")+' a fee reminder today (plan ending soon, ended, or fees pending). <button onclick="f=\'rem\';draw()">Open reminders</button></div>':"",
 ob='<div class="c" style="background:var(--infobg);color:var(--info);border-color:var(--info)">Opening offer: <b>'+filled+'</b> of '+OFFER_SEATS+' seats filled · <b>'+Math.max(0,OFFER_SEATS-filled)+'</b> left</div>';
 $("bk").innerHTML=rb+ob+ub+(d>=7?'<div class="c due">'+(lb?"Last backup was "+d+" days ago. ":"You have not taken a backup yet. ")+"Select Backup to download your data.</div>":"")}
