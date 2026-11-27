@@ -142,7 +142,6 @@ say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_p
 if(!act)return go().catch(function(){say("Could not connect. Please check your internet and try again.")});
 var c=$("p-ic").value.trim();rpc("student_activate",{p_member:m,p_code:c,p_pass:p}).then(function(r){if(r==="ok"){act=false;return go()}
 say(r==="weak"?"Password must be 8 to 72 characters.":r==="locked"?"Too many wrong tries. Please wait 15 minutes.":"Member ID or activation code is wrong, or this account is already active.")}).catch(function(){say("Could not connect. Please check your internet and try again.")})},
-save:function(){var o=$("p-sv");o.textContent="Saving…";rpc("student_save",{p_member:mem,p_pass:pw,p_father:$("p-f").value,p_address:$("p-ad").value,p_alt:$("p-al").value,p_pin:$("p-pn").value}).then(function(ok){o.textContent=ok?"Saved ✓":"Please check the details: mobile must be 10 digits and PIN 6 digits."}).catch(function(){o.textContent="Could not save. Check your internet."})},
 up:function(){var o=$("p-au"),f=$("p-af").files[0];
 if(!f){o.textContent="Please choose your Aadhaar PDF first.";return}
 if(!/\.pdf$/i.test(f.name)||(f.type&&f.type!=="application/pdf")){o.textContent="Only a PDF file is accepted.";return}
