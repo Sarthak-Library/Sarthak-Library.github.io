@@ -47,7 +47,7 @@ function AAD(d){return'<h3>Aadhaar (PDF)</h3><div class="c"><p id="p-as">'+(d.aa
 '<label>Aadhaar copy as PDF (max 2 MB)<input id="p-af" type="file" accept="application/pdf,.pdf"></label>'+
 '<fieldset class="dcl"><legend>Declaration (required)</legend><label style="display:flex;gap:8px;align-items:flex-start"><input id="p-ac" type="checkbox" required onchange="document.getElementById(\'p-ab\').disabled=!this.checked" style="width:auto;margin-top:4px"><span>I declare that this Aadhaar copy is being submitted <strong>with the full consent of the Aadhaar holder</strong>. I allow Sarthak Library to store it privately and use it only to verify identity for this membership. It will not be shared with anyone else, and I can ask the library to delete it at any time.</span></label></fieldset>'+
 '<button id="p-ab" class="p full" disabled onclick="LP.up()">Upload Aadhaar PDF</button><small id="p-au" role="status" aria-live="polite"></small></div>'}
-function endOf(d){if(!d.start_date)return null;var s=new Date(d.start_date+"T00:00:00Z"),day=s.getUTCDate();s.setUTCDate(1);s.setUTCMonth(s.getUTCMonth()+(+d.months||1));s.setUTCDate(Math.min(day,new Date(Date.UTC(s.getUTCFullYear(),s.getUTCMonth()+1,0)).getUTCDate()));return s}
+function endOf(d){if(!d.start_date)return null;var s=new Date(d.start_date+"T00:00:00Z"),day=s.getUTCDate();s.setUTCDate(1);s.setUTCMonth(s.getUTCMonth()+(+d.months||1));s.setUTCDate(Math.min(day,new Date(Date.UTC(s.getUTCFullYear(),s.getUTCMonth()+1,0)).getUTCDate())+(+d.extra_days||0));return s}
 var CS=null;
 function notifKey(){return"lbSNotif:"+(CS&&CS.member_id)}
 function studentNotifOn(){try{return!!CS&&localStorage.getItem(notifKey())==="1"}catch(e){return false}}
@@ -72,11 +72,16 @@ S.innerHTML='<div class="ah"><a class="lgo" href="#top"><img src="/logo-96.webp"
 '<h2>Hello, '+esc(d.name)+'</h2><p>Member ID <strong>'+esc(d.member_id)+'</strong></p>'+remBox(d,due)+
 '<h3>Your student pass</h3><div class="c" style="padding:14px"><canvas id="p-cv" style="width:100%;height:auto;display:block;border-radius:14px"></canvas><button class="btn sm" style="margin-top:12px" onclick="LP.dlPass()">Download my pass (PNG)</button></div>'+
 '<div class="s"><div><small>Seat</small><br><strong>'+esc(d.seat||"-")+'</strong></div><div><small>Fee paid</small><br><strong>₹'+paid+'</strong></div><div><small>Due</small><br><strong class="'+(due?"due":"")+'">₹'+due+'</strong></div></div>'+
-'<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Plan ends:</strong> '+(endOf(d)?esc(fdate(endOf(d))):"-")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
+'<div class="c"><strong>Plan:</strong> '+esc(PL[d.plan_key]||d.plan_key)+' · '+esc(d.months)+' month(s)<br><strong>Start date:</strong> '+esc(d.start_date||"-")+'<br><strong>Plan ends:</strong> '+(endOf(d)?esc(fdate(endOf(d))):"-")+(d.extra_days?' <span class="bd ok">+'+esc(d.extra_days)+' day(s) from library holidays</span>':"")+'<br><strong>Total fee:</strong> ₹'+esc(d.total||0)+'</div>'+
 '<h3>Payments</h3><div class="c">'+((d.payments||[]).length?d.payments.map(function(p){return esc(p.paid_on)+' — ₹'+esc(p.amount)}).join("<br>"):"No payments recorded yet.")+'</div>'+
 '<h3>Your details</h3><div class="c">Your registration details (father\'s name, address, alternate mobile, PIN) are collected through the library\'s registration form. '+(FORM?'<a href="'+FORM+'" target="_blank" rel="noopener">Fill or update the registration form</a>':"")+'</div>'+AAD(d);
 var pe=endOf(d),today=new Date(),td0=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate())),expired=pe&&pe<td0;
 drawPass($("p-cv"),{name:d.name,member_id:d.member_id,planLabel:PLS[d.plan_key]||d.plan_key,seat:d.seat,startFmt:d.start_date?fdate(d.start_date):"-",endFmt:pe?fdate(pe):"-",statusLabel:expired?"Expired":"Active",statusColor:expired?"#ff8a80":"#7ee2b8"});paintBell()}
+(function(){var b=document.getElementById("hb");if(!b)return;
+rpc("public_closures",{}).then(function(a){
+if(!a||!a.length)return;var c=a[0],t=new Date(),td=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate())).toISOString().slice(0,10),on=c.start_date<=td&&td<=c.end_date;
+b.textContent=(on?"Closed today":"Closed")+" "+fdate(c.start_date)+" to "+fdate(c.end_date)+(c.note?" for "+c.note:"")+". Membership periods are extended automatically.";b.hidden=false
+}).catch(function(){})})();
 window.LP={
 sGo:function(){var m=$("p-sm").value.trim(),p=$("p-sp").value;if(!m||!p){say("Please enter your Member ID and password.");return}
 say("Please wait…");var go=function(){return rpc("student_get",{p_member:m,p_pass:p}).then(function(d){if(!d){say("Member ID or password is wrong, or the account is locked for 15 minutes after 5 wrong tries.");return}mem=m;pw=p;say("");view(d)})};

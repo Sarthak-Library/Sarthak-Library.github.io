@@ -70,10 +70,18 @@ dialog h3{margin:0 0 12px;font-size:20px}dialog label{display:block;margin:10px 
 </style><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"></head><body>
 <div id="L" class="login"><div class="lc"><div class="lg"><img src="/logo-160.webp" alt="Sarthak Library" width="76" height="76"></div><h2>Sarthak Library</h2><p>Admin sign in</p><input id="e" type="email" autocomplete="username" placeholder="Email"><input id="w" type="password" autocomplete="current-password" placeholder="Password"><button class="p" onclick="login()">Sign in</button><small id="m"></small></div></div>
 <div id="A" class="app" hidden>
-<aside class="sb"><div class="br"><img src="/logo-96.webp" alt="" width="30" height="30">Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button id="nt" onclick="toggleNotif()"></button><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
+<aside class="sb"><div class="br"><img src="/logo-96.webp" alt="" width="30" height="30">Sarthak Library<small>Admin</small></div><nav id="tabs" aria-label="Sections"></nav><div class="sf"><button id="nt" onclick="toggleNotif()"></button><button onclick="holiday()">📅 Holiday</button><button onclick="csv()">⬇ Backup</button><button onclick="out()">Log out</button></div></aside>
 <main class="mn"><header class="tp"><h1 id="pt">Students</h1><input id="q" type="search" placeholder="Search name, mobile, ID, seat no..." oninput="draw()"><button class="p" onclick="openForm()">+ Add student</button></header>
 <div id="bk"></div><div class="s" id="st"></div><div class="card" id="o"></div></main></div>
 <dialog id="V"><h3>Student details</h3><dl class="kv" id="vb"></dl><div class="b" id="vf"></div></dialog>
+<dialog id="H"><h3>Declare a library holiday</h3>
+<p class="sub">Pick the days the library will be closed. Every currently enrolled student whose membership covers those days gets their end date pushed out by the same number of days &mdash; automatically, once.</p>
+<label>Closed from<input id="h_s" type="date"></label>
+<label>Closed to (inclusive)<input id="h_e" type="date"></label>
+<label>Reason (students may see this)<input id="h_n" placeholder="e.g. Diwali"></label>
+<p id="h_r" role="status" aria-live="polite"></p>
+<div class="b"><button onclick="hPreview()">Preview</button><button class="p" id="h_go" onclick="hApply()" disabled>Extend memberships</button><button onclick="H.close()">Cancel</button></div>
+<h3 style="margin-top:22px">Past holidays</h3><div id="h_list"><p class="sub">Loading…</p></div></dialog>
 <dialog id="D"><h3 id="dt"></h3><div id="df"></div><div class="b"><button class="p" onclick="saveF()">Save</button><button onclick="D.close()">Cancel</button></div><small id="de" class="due"></small></dialog>
 <dialog id="PD" class="pdlg"><h3>Student pass</h3><canvas id="p-cv" class="pc"></canvas><p class="sub" style="margin:10px 0">WhatsApp can&#39;t attach a picture by itself: download the pass first, then attach that file in the chat it opens.</p><div class="b"><button class="p" onclick="downloadCanvas($(&#39;p-cv&#39;),(PD.dataset.m||&#39;pass&#39;)+&#39;.png&#39;)">Download pass (PNG)</button><button onclick="PD.waBtn()">Message on WhatsApp</button><button onclick="PD.close()">Close</button></div></dialog>
 <script>
@@ -141,7 +149,7 @@ function load(){api("/rest/v1/bookings?select=*,payments(*)&order=created_at.des
 function td(){var d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function paid(r){return(r.payments||[]).reduce(function(a,p){return a+(Number(p.amount)||0)},0)}
 function due(r){return(Number(r.total)||0)+(Number(r.extra)||0)-paid(r)}
-function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z"),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+r.months);d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate()));return d.toISOString().slice(0,10)}
+function endD(r){if(!r.start_date)return"-";var d=new Date(r.start_date+"T00:00:00Z"),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+r.months);d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate())+(r.extra_days||0));return d.toISOString().slice(0,10)}
 function dl(r){return r.start_date?Math.ceil((new Date(endD(r))-new Date(td()))/864e5):999}
 function exp(r){if(r.status!="approved"||!r.start_date)return"";var d=dl(r);return d<0?' <b class="due">EXPIRED</b>':d<=7?' <b class="due">(expires in '+d+' days)</b>':""}
 function match(r){var q=$("q").value.toLowerCase();return!q||[r.member_id,r.name,r.mobile,r.seat,r.exam,r.father_name,r.alt_mobile,r.pin].join(" ").toLowerCase().indexOf(q)>-1}
@@ -232,6 +240,23 @@ $("vb").innerHTML=kv("Name",r.name)+kv("Member ID",r.member_id)+kv("Mobile",r.mo
 kv("Plan",(P[r.plan_key]||r.plan_key)+" · "+r.months+" month(s)")+kv("Seat",r.seat)+kv("Period",(r.start_date||"-")+" to "+endD(r))+kv("Fees","Total ₹"+(r.total||0)+(r.extra?" + ₹"+r.extra+" deposit":"")+" · Paid ₹"+paid(r)+" · Due ₹"+due(r))+
 kv("Details filled",r.details_updated_at?fdt(r.details_updated_at):"Student has not filled details yet")+kv("Aadhaar PDF",r.aadhaar_path?"Uploaded "+fdt(r.aadhaar_uploaded_at):"Not uploaded yet");
 $("vf").innerHTML=(AP.test(r.aadhaar_path||"")?'<button class="p" onclick="aad(\''+sid(r.id)+'\')">View Aadhaar</button>':"")+'<button onclick="document.getElementById(\'V\').close()">Close</button>';V.showModal()}
+var H=$("H"),hPend=null;
+function holiday(){$("h_s").value="";$("h_e").value="";$("h_n").value="";$("h_r").textContent="";$("h_go").disabled=true;hPend=null;loadClosures();H.showModal()}
+function hRange(){var s=$("h_s").value,e=$("h_e").value;if(!s||!e)return null;if(e<s)return null;var d=Math.round((new Date(e)-new Date(s))/864e5)+1;if(d>60)return null;return{s:s,e:e,d:d}}
+function hPreview(){var r=hRange();$("h_go").disabled=true;hPend=null;if(!r){$("h_r").textContent="Pick a valid from/to date (60 days or fewer).";return}
+$("h_r").textContent="Checking…";
+api("/rest/v1/rpc/admin_declare_closure",{method:"POST",body:JSON.stringify({p_start:r.s,p_end:r.e,p_note:$("h_n").value.trim()||null,p_dry_run:true})}).then(function(x){return x.json().then(function(j){return{s:x.status,j:j}})}).then(function(x){
+if(x.s!==200){$("h_r").textContent=(x.j&&x.j.message)||"Could not check this. Please try again.";return}
+$("h_r").textContent="This will add "+x.j.days+" day(s) to "+x.j.affected+" currently enrolled student(s). Nothing is changed yet.";hPend=r;$("h_go").disabled=false
+}).catch(function(){$("h_r").textContent="Network problem. Please try again."})}
+function hApply(){if(!hPend)return;var r=hPend;$("h_go").disabled=true;$("h_r").textContent="Applying…";
+api("/rest/v1/rpc/admin_declare_closure",{method:"POST",body:JSON.stringify({p_start:r.s,p_end:r.e,p_note:$("h_n").value.trim()||null,p_dry_run:false})}).then(function(x){return x.json().then(function(j){return{s:x.status,j:j}})}).then(function(x){
+if(x.s!==200){$("h_r").textContent=(x.j&&x.j.message)||"Could not apply this. Please try again.";$("h_go").disabled=false;return}
+$("h_r").textContent="Done. Extended "+x.j.affected+" student(s) by "+x.j.days+" day(s).";hPend=null;load();loadClosures()
+}).catch(function(){$("h_r").textContent="Network problem. Please try again.";$("h_go").disabled=false})}
+function loadClosures(){api("/rest/v1/library_closures?select=start_date,end_date,days,note,affected&order=start_date.desc&limit=10").then(function(x){return x.json()}).then(function(a){
+$("h_list").innerHTML=a.length?a.map(function(c){return"<div class=\"sch\"><b>"+esc(c.start_date)+" to "+esc(c.end_date)+"</b> ("+c.days+" day(s)) "+(c.note?"&mdash; "+esc(c.note):"")+'<span class="sub">Extended '+c.affected+" student(s)</span></div>"}).join(""):'<p class="sub">No holidays declared yet.</p>'
+}).catch(function(){$("h_list").innerHTML='<p class="sub">Could not load.</p>'})}
 function aad(id){var r=rows.find(function(x){return x.id==id});if(!r||!AP.test(r.aadhaar_path||""))return;var w=window.open("about:blank","_blank");if(w)w.opener=null;
 fetch(SB+"/storage/v1/object/sign/aadhaar/"+r.aadhaar_path,{method:"POST",headers:{apikey:SK,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:120})}).then(function(x){return x.json()}).then(function(d){
 if(!d||typeof d.signedURL!=="string"||d.signedURL.indexOf("/object/sign/aadhaar/")!==0){if(w)w.close();alert("Could not open the Aadhaar file. Please log in again and retry.");return}

@@ -198,6 +198,8 @@ body.lock{overflow:hidden}
 .fld summary:focus-visible{outline:2px solid currentColor;outline-offset:4px;border-radius:6px}
 .fld .fl{margin-top:16px;padding-top:0;border-top:0}
 /* hero: logo instead of the timer, so the headline and the Reserve button lead */
+.hero-logo{display:block;width:min(320px,70vw);height:auto;border-radius:50%;box-shadow:0 18px 50px rgba(16,31,54,.18)}
+@media(max-width:860px){.hero-logo{width:min(200px,50vw)}}
 /* free study timer now has its own section below the explore cards */
 .tl{padding:56px 0;border-top:1px solid var(--line)}
 .tlg{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center}
@@ -209,3 +211,5 @@ body.lock{overflow:hidden}
 /* terms page */
 .qg ul{margin:0 0 8px;padding-left:20px}.qg li{margin:0 0 8px;font-size:var(--fs-sm);color:var(--mut);line-height:1.65}.qg li strong{color:var(--fg)}.tdt{color:var(--mut);max-width:70ch;margin:0 0 28px}
 .form .chk a{text-decoration:underline;text-underline-offset:3px}
+
+.hb{background:var(--infobg,#eef4ff);color:var(--info,#2457d9);border-bottom:1px solid var(--line);font:600 var(--fs-sm) var(--ui);text-align:center;padding:8px 16px}
